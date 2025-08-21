@@ -1,133 +1,124 @@
-let questions = [];
+let questions = [
+  {
+    q: "What is 2 + 2?",
+    options: ["3", "4", "5", "6"],
+    answer: "4"
+  },
+  {
+    q: "Capital of India?",
+    options: ["Mumbai", "Chennai", "Delhi", "Kolkata"],
+    answer: "Delhi"
+  },
+  {
+    q: "Which is a programming language?",
+    options: ["HTML", "CSS", "JavaScript", "Photoshop"],
+    answer: "JavaScript"
+  }
+];
 
-// Helper to get/set logged-in register numbers
-function getLoggedInRegs() {
-    const data = localStorage.getItem("loggedInRegs");
-    return data ? JSON.parse(data) : [];
-}
-function setLoggedInRegs(regs) {
-    localStorage.setItem("loggedInRegs", JSON.stringify(regs));
-}
+let currentUser = {};
+let timePerQuestion = 5 * 60; // 5 minutes = 300 seconds
+let totalTime = questions.length * timePerQuestion;
+let timerInterval;
 
-function login() {
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
+// Start Test
+function startTest() {
+  let roll = document.getElementById("rollNumber").value.trim();
+  let name = document.getElementById("studentName").value.trim();
 
-    // Admin login
-    if (username === "admin" && password === "admin123") {
-        document.getElementById("loginContainer").classList.add("hidden");
-        document.getElementById("adminPanel").classList.remove("hidden");
-        loadQuestions();
-        return;
-    }
+  if (!roll || !name) {
+    alert("Please enter Roll Number and Name");
+    return;
+  }
 
-    // Student login check
-    if (/^951323106\d{3}$/.test(username)) {
-        const lastThree = username.slice(-3);
-        if (password === lastThree) {
-            // Check if already logged in
-            const regs = getLoggedInRegs();
-            if (regs.includes(username)) {
-                alert("This register number has already logged in once.");
-                return;
-            }
-            regs.push(username);
-            setLoggedInRegs(regs);
-            document.getElementById("loginContainer").classList.add("hidden");
-            document.getElementById("testPanel").classList.remove("hidden");
-            loadTest();
-            return;
-        }
-    }
+  currentUser = { roll, name, score: 0 };
 
-    alert("Invalid login credentials");
+  document.getElementById("loginPanel").classList.add("hidden");
+  document.getElementById("testPanel").classList.remove("hidden");
+
+  loadQuestions();
+  startTimer();
+  detectCheating();
 }
 
-function logout() {
-    document.getElementById("loginContainer").classList.remove("hidden");
-    document.getElementById("adminPanel").classList.add("hidden");
-    document.getElementById("testPanel").classList.add("hidden");
-    document.getElementById("username").value = "";
-    document.getElementById("password").value = "";
-}
-
-function addQuestion() {
-    const question = document.getElementById("question").value.trim();
-    const optionA = document.getElementById("optionA").value.trim();
-    const optionB = document.getElementById("optionB").value.trim();
-    const optionC = document.getElementById("optionC").value.trim();
-    const optionD = document.getElementById("optionD").value.trim();
-    const correct = document.getElementById("correctOption").value;
-
-    if (!question || !optionA || !optionB || !optionC || !optionD || !correct) {
-        alert("Please fill all fields");
-        return;
-    }
-
-    questions.push({ question, options: { A: optionA, B: optionB, C: optionC, D: optionD }, correct });
-    saveQuestions();
-    loadQuestions();
-    clearAdminFields();
-}
-
+// Load Questions
 function loadQuestions() {
-    const list = document.getElementById("questionList");
-    list.innerHTML = "";
-    questions.forEach((q, index) => {
-        const li = document.createElement("li");
-        li.textContent = `${index + 1}. ${q.question} (Correct: ${q.correct})`;
-        list.appendChild(li);
-    });
+  let container = document.getElementById("questionContainer");
+  container.innerHTML = "";
+
+  questions.forEach((q, index) => {
+    let div = document.createElement("div");
+    div.classList.add("questionBlock");
+
+    div.innerHTML = `
+      <p class="question">${index + 1}. ${q.q}</p>
+      <div class="options">
+        ${q.options.map(opt => `
+          <label class="option">
+            <input type="radio" name="q${index}" value="${opt}"> ${opt}
+          </label>
+        `).join("")}
+      </div>
+    `;
+    container.appendChild(div);
+  });
 }
 
-function saveQuestions() {
-    localStorage.setItem("questions", JSON.stringify(questions));
-}
+// Timer
+function startTimer() {
+  let timerDisplay = document.getElementById("timer");
+  let startTime = new Date();
 
-function loadTest() {
-    const saved = localStorage.getItem("questions");
-    if (saved) {
-        questions = JSON.parse(saved);
+  timerInterval = setInterval(() => {
+    totalTime--;
+    let minutes = Math.floor(totalTime / 60);
+    let seconds = totalTime % 60;
+    timerDisplay.textContent = `Time Left: ${minutes}m ${seconds}s`;
+
+    if (totalTime <= 0) {
+      clearInterval(timerInterval);
+      submitTest();
     }
+  }, 1000);
 
-    const container = document.getElementById("questionContainer");
-    container.innerHTML = "";
-    questions.forEach((q, index) => {
-        const div = document.createElement("div");
-        div.innerHTML = `<h4>Q${index + 1}: ${q.question}</h4>` +
-            Object.keys(q.options).map(opt => `
-                <label class="option">
-                    <input type="radio" name="q${index}" value="${opt}"> ${opt}: ${q.options[opt]}
-                </label>
-            `).join("");
-        container.appendChild(div);
-    });
+  currentUser.startTime = startTime;
 }
 
-function submitTest() {
-    let score = 0;
-    questions.forEach((q, index) => {
-        const selected = document.querySelector(`input[name="q${index}"]:checked`);
-        if (selected && selected.value === q.correct) {
-            score++;
-        }
-    });
-    alert(`Your score: ${score} / ${questions.length}`);
+// Submit Test
+function submitTest(reason = "Completed") {
+  clearInterval(timerInterval);
+
+  let score = 0;
+  questions.forEach((q, index) => {
+    let answer = document.querySelector(`input[name="q${index}"]:checked`);
+    if (answer && answer.value === q.answer) score++;
+  });
+
+  currentUser.score = score;
+  currentUser.endTime = new Date();
+
+  document.getElementById("testPanel").classList.add("hidden");
+  document.getElementById("resultPanel").classList.remove("hidden");
+
+  document.getElementById("resultRoll").textContent = currentUser.roll;
+  document.getElementById("resultName").textContent = currentUser.name;
+  document.getElementById("resultScore").textContent = `${score} / ${questions.length}`;
+  document.getElementById("resultTime").textContent = 
+    reason === "Cheating" ? "Disqualified (Cheating)" : currentUser.endTime.toLocaleTimeString();
 }
 
-function clearAdminFields() {
-    document.getElementById("question").value = "";
-    document.getElementById("optionA").value = "";
-    document.getElementById("optionB").value = "";
-    document.getElementById("optionC").value = "";
-    document.getElementById("optionD").value = "";
-    document.getElementById("correctOption").value = "";
-}
-
-// Load saved questions on page load
-window.onload = () => {
-    const saved = localStorage.getItem("questions");
-    if (saved) {
-        questions = JSON.parse(saved);
+// Detect Cheating
+function detectCheating() {
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      alert("You are cheating! Test Ended.");
+      submitTest("Cheating");
     }
-};
+  });
+
+  window.addEventListener("blur", () => {
+    alert("You switched apps! Test Ended.");
+    submitTest("Cheating");
+  });
+}
+

@@ -1,64 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>College Placement Test</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <title>Online Test System</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 </head>
 <body>
-    <div class="container" id="loginContainer">
-        <div class="topbar">
-            <h2>College Placement Test</h2>
-        </div>
-        <div class="panel">
-            <h3>Login</h3>
-            <input type="text" id="username" placeholder="Register Number">
-            <input type="password" id="password" placeholder="Password">
-            <button class="btn" onclick="login()">Login</button>
-            <p class="muted small">Students: Reg No = 951323106001-951323106999, Pass = Last 3 digits</p>
-        </div>
+  <div class="container">
+    <!-- Top Bar -->
+    <div class="topbar">📘 aptitude Test System</div>
+
+    <!-- Login Panel -->
+    <div id="loginPanel" class="panel">
+      <h2>Login</h2>
+      <label for="rollNo">Enter Roll Number:</label>
+      <input type="text" id="rollNo" placeholder="e.g. 21ECE001">
+      <button class="btn" onclick="startTest()">Start Test</button>
     </div>
 
-    <!-- Admin Panel -->
-    <div class="container hidden" id="adminPanel">
-        <div class="topbar">
-            <h2>Admin Panel</h2>
-        </div>
-        <div class="panel">
-            <h3>Add New Question</h3>
-            <input type="text" id="question" placeholder="Enter question">
-            <input type="text" id="optionA" placeholder="Option A">
-            <input type="text" id="optionB" placeholder="Option B">
-            <input type="text" id="optionC" placeholder="Option C">
-            <input type="text" id="optionD" placeholder="Option D">
-            <select id="correctOption">
-                <option value="">Select Correct Option</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
-            </select>
-            <button class="btn" onclick="addQuestion()">Add Question</button>
-        </div>
-        <div class="panel">
-            <h3>All Questions</h3>
-            <ul id="questionList"></ul>
-        </div>
-        <button class="btn btn-danger" onclick="logout()">Logout</button>
+    <!-- Instructions Panel -->
+    <div id="instructionsPanel" class="panel hidden">
+      <h2>Instructions</h2>
+      <ul>
+        <li>Total time: <b>5 minutes per question</b></li>
+        <li>Do not minimize or switch apps. If detected, test will end immediately.</li>
+        <li>Once submitted, you cannot change your answers.</li>
+      </ul>
+      <button class="btn" onclick="beginQuiz()">Begin Quiz</button>
     </div>
 
-    <!-- Student Test -->
-    <div class="container hidden" id="testPanel">
-        <div class="topbar">
-            <h2>Placement Test</h2>
-        </div>
-        <div class="panel" id="questionContainer"></div>
-        <button class="btn" onclick="submitTest()">Submit Test</button>
-        <button class="btn btn-danger" onclick="logout()">Logout</button>
+    <!-- Quiz Panel -->
+    <div id="quizPanel" class="panel hidden">
+      <h2>Quiz</h2>
+      <p id="timer" class="small muted">Time Left: 05:00</p>
+      <div id="quiz"></div>
+      <button class="btn" onclick="nextQuestion()">Next Question</button>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Result Panel -->
+    <div id="resultPanel" class="panel hidden">
+      <h2>Test Result</h2>
+      <p id="result"></p>
+      <p id="rollDisplay"></p>
+      <p id="timeDisplay"></p>
+      <button class="btn" onclick="location.reload()">Restart</button>
+    </div>
+  </div>
+
+  <script>
+    // ✅ Your Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBt6sfCYmc3wsQ-EoCZnQUe87Lnvm3YVbk",
+      authDomain: "amptest-258fd.firebaseapp.com",
+      projectId: "amptest-258fd",
+      storageBucket: "amptest-258fd.firebasestorage.app",
+      messagingSenderId: "207766817109",
+      appId: "1:207766817109:web:fcf9275cb39e994130c7dc",
+      measurementId: "G-V6TGFDQ4K8"
+    };
+
+    // ✅ Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let currentRoll = "";
+    let score = 0;
+    let startTime;
+
+    function startTest() {
+      const rollInput = document.getElementById("rollNo").value.trim();
+      if (!rollInput) {
+        alert("Please enter your roll number");
+        return;
+      }
+      currentRoll = rollInput;
+      document.getElementById("loginPanel").classList.add("hidden");
+      document.getElementById("instructionsPanel").classList.remove("hidden");
+    }
+
+    function beginQuiz() {
+      startTime = new Date();
+      document.getElementById("instructionsPanel").classList.add("hidden");
+      document.getElementById("quizPanel").classList.remove("hidden");
+
+      // Example single question
+      document.getElementById("quiz").innerHTML = `
+        <p>Q1. 2 + 2 = ?</p>
+        <input type="radio" name="q1" value="3"> 3 <br>
+        <input type="radio" name="q1" value="4"> 4 <br>
+        <input type="radio" name="q1" value="5"> 5 <br>
+      `;
+    }
+
+    function nextQuestion() {
+      let ans = document.querySelector('input[name="q1"]:checked');
+      if (ans && ans.value === "4") {
+        score++;
+      }
+      endTest();
+    }
+
+    function endTest() {
+      const endTime = new Date();
+      const duration = Math.floor((endTime - startTime) / 1000); // seconds
+      const timestamp = new Date().toLocaleString();
+
+      // ✅ Save to Firebase
+      db.ref("results/" + currentRoll).set({
+        rollNo: currentRoll,
+        score: score,
+        timeTaken: duration + " sec",
+        submittedAt: timestamp
+      });
+
+      document.getElementById("quizPanel").classList.add("hidden");
+      document.getElementById("resultPanel").classList.remove("hidden");
+
+      document.getElementById("result").innerText = "Your Score: " + score;
+      document.getElementById("rollDisplay").innerText = "Roll Number: " + currentRoll;
+      document.getElementById("timeDisplay").innerText = "Submitted At: " + timestamp;
+    }
+  </script>
 </body>
-</html>
 </html>
