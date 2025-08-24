@@ -1,14 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>College Placement Test</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>College Placement Aptitude Test</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- LOGIN PAGE -->
-  <div class="login-container" id="loginPage">
+
+  <!-- Welcome Page -->
+  <div id="welcomePage" class="welcome-container">
+    <div class="welcome-content">
+      <div class="welcome-icon">
+        <svg width="64" height="64" fill="none" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="32" fill="url(#grad1)"/>
+          <path d="M32 16L52 26V38L32 48L12 38V26L32 16Z" fill="#fff" fill-opacity="0.95"/>
+          <path d="M32 16V48" stroke="#00e6d3" stroke-width="2"/>
+          <defs>
+            <linearGradient id="grad1" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#00e6d3"/>
+              <stop offset="1" stop-color="#0072ff"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <h1 class="college-name">Jayaraj Annapackiam CSI College of Engineering</h1>
+      <div class="welcome-divider"></div>
+      <p class="welcome-title">Placement Aptitude Test Portal</p>
+      <p class="tagline">Shaping Bright Futures Through Knowledge</p>
+      <button onclick="goToLogin()">Start Your Test</button>
+    </div>
+  </div>
+
+  <!-- Login Page -->
+  <div id="loginPage" class="hidden login-container">
     <h2>Student Login</h2>
     <input type="text" id="rollNumber" placeholder="Enter Roll Number" />
     <input type="password" id="password" placeholder="Enter Password" />
@@ -16,22 +41,28 @@
     <p id="loginError" class="error"></p>
   </div>
 
-  <!-- QUIZ PAGE -->
-  <div class="quiz-container hidden" id="quizPage">
+  <!-- Quiz Page -->
+  <div id="quizPage" class="hidden quiz-container">
     <div class="quiz-header">
-      <h3 id="studentId"></h3>
-      <div id="timer">Time: 60s</div>
+      <h2 id="studentId"></h2>
+      <div id="timer">01:00</div>
     </div>
+
     <div id="questionBox"></div>
     <div id="optionsBox"></div>
-    <button onclick="nextQuestion()">Next</button>
+
+    <div style="margin-top:12px;">
+      <button id="nextBtn" onclick="nextQuestion()">Next</button>
+    </div>
   </div>
 
-  <!-- RESULT PAGE -->
-  <div class="result-container hidden" id="resultPage">
-    <h2>Quiz Completed!</h2>
+
+
+  <!-- Result Page -->
+  <div id="resultPage" class="hidden result-container">
+    <h2>Test Completed</h2>
     <p id="scoreBox"></p>
-    <div class="credits">Powered by JACSICE Placement System</div>
+    <div class="credits">Powered by JACSICE Placement cell</div>
   </div>
 
   <script src="script.js"></script>

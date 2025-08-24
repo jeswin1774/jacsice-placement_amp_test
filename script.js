@@ -1,19 +1,3 @@
-// Student roll numbers
-const validUsers = [];
-for (let i = 1; i <= 60; i++) validUsers.push("23EC" + String(i).padStart(2, "0"));
-validUsers.push("23EC301", "23EC302", "23EC701");
-
-// Track logged-in students (prevent re-login)
-const usedRolls = new Set();
-
-let currentUser = "";
-let currentQuestion = 0;
-let score = 0;
-let timer;
-let timeLeft = 60;
-let questions = [];
-
-// Question bank
 const allQuestions = [
   {
     q: "Question 1. A seller allows a discount of 5% on a watch. If he allows a discount of 7%, he earns ₹15 less in the profit. What is the marked price?",
@@ -30,16 +14,8 @@ const allQuestions = [
     options: ["₹ 12250", "₹ 12500", "₹ 12800", "₹ 13500"],
     answer: "₹ 12500"
   },
-
-  // FIXED: this object was missing the 'q' field before (which breaks rendering)
   {
-    q: "Question ?. (Text missing in source.) Choose the correct option.",
-    options: ["10% gain", "25% loss", "40% gain", "6.8% loss"],
-    answer: "10% gain"
-  },
-
-  {
-    q: "Question 4. A tradesman gives 4% discount on the marked price and gives 1 article free for buying every 15 articles and thus gains 35%. The marked price is above the cost price by:",
+    q: "Question 4. A tradesman gives 4% di2scount on the marked price and gives 1 article free for buying every 15 articles and thus gains 35%. The marked price is above the cost price by:",
     options: ["20%", "39%", "40%", "50%"],
     answer: "50%"
   },
@@ -47,7 +23,8 @@ const allQuestions = [
     q: "Question 5. A trader marked the selling price of an article at 10% above the cost price. At the time of selling, he allows certain discount and suffers a loss of 1%. He allowed a discount of:",
     options: ["9%", "10%", "10.5%", "11%"],
     answer: "10%"
-  },
+     },
+
   {
     q: "Question 6. A man marked price of a watch 20% above its cost price. He then allowed a discount of 10%. Find his gain percent?",
     options: ["8%", "10%", "12%", "15%"],
@@ -60,12 +37,7 @@ const allQuestions = [
   },
   {
     q: "Question 8. A discount series of p%, q% and r% is same as a single discount of:",
-    options: [
-      "100 - [p + q + r - (pq/100) - (qr/100) - (rp/100) + (pqr/10000)] %",
-      "p + q + r %",
-      "p - q - r %",
-      "None of these"
-    ],
+    options: ["100 - [p + q + r - (pq/100) - (qr/100) - (rp/100) + (pqr/10000)] %", "p + q + r %", "p - q - r %", "None of these"],
     answer: "100 - [p + q + r - (pq/100) - (qr/100) - (rp/100) + (pqr/10000)] %"
   },
   {
@@ -167,112 +139,220 @@ const allQuestions = [
     q: "Question 28. A retailer allows a trade discount of 20% and a cash discount of 5% on the cost price. If he sells his goods at the marked price, one of the discounts must be adjusted. What is his total gain percent?",
     options: ["20%", "22%", "24%", "25%"],
     answer: "25%"
-  }, // <-- FIXED: comma was missing here
-
+  },
   {
     q: "Question 29. Mohan sold an article for ₹1500. Had he offered a discount of 10% on the selling price he would have earned a profit of 8%. What is the cost price?",
     options: ["₹ 1225", "₹ 1250", "₹ 1280", "₹ 1350"],
     answer: "₹ 1250"
   },
   {
-    q: "Question 30. A train 150 meters long passes a pole in 15 seconds. What is the speed of the train in km/h?",
-    options: ["30 km/h", "36 km/h", "54 km/h", "60 km/h"],
-    answer: "36 km/h"
-  }
+  q: "Question 30. A train 150 meters long passes a pole in 15 seconds. What is the speed of the train in km/h?",
+  options: ["30 km/h", "36 km/h", "54 km/h", "60 km/h"],
+  answer: "36 km/h"
+  },
+
 ];
 
-// LOGIN
+const totalTimeInMinutes = 30;
+const totalTimeInSeconds = totalTimeInMinutes * 60;
+
+let currentQuestionIndex = 0;
+let score = 0;
+let timeLeft = totalTimeInSeconds;
+let timer;
+let cheatingDetected = false;
+let testCompleted = false;
+
+const questionText = document.getElementById("questionBox");
+const optionsContainer = document.getElementById("optionsBox");
+const timerText = document.getElementById("timer");
+const scoreBox = document.getElementById("scoreBox");
+const nextBtn = document.getElementById("nextBtn");
+const studentIdText = document.getElementById("studentId");
+
+function goToLogin() {
+  document.getElementById("welcomePage").classList.add("hidden");
+  document.getElementById("loginPage").classList.remove("hidden");
+}
+
 function login() {
-  const roll = document.getElementById("rollNumber").value.trim();
-  const pass = document.getElementById("password").value.trim();
-  const errorBox = document.getElementById("loginError");
+  const rollNumber = document.getElementById("rollNumber").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const loginError = document.getElementById("loginError");
 
-  // Check roll format
-  if (!validUsers.includes(roll)) {
-    errorBox.textContent = "Invalid Roll Number!";
-    return;
-  }
-  // Password = last TWO characters of roll
-  if (roll.slice(-2) !== pass) {
-    errorBox.textContent = "Invalid Password! (Tip: last two digits of roll)";
-    return;
-  }
-  if (usedRolls.has(roll)) {
-    errorBox.textContent = "This Roll Number has already taken the test!";
+  if (rollNumber === "" || password === "") {
+    loginError.textContent = "Please enter both Roll Number and Password.";
     return;
   }
 
-  // Mark roll number as used
-  usedRolls.add(roll);
-  currentUser = roll;
-
-  // Pick 30 random questions
-  questions = allQuestions
-    .slice() // don't mutate original
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 30);
+  loginError.textContent = "";
 
   document.getElementById("loginPage").classList.add("hidden");
   document.getElementById("quizPage").classList.remove("hidden");
-  document.getElementById("studentId").textContent = "Roll: " + currentUser;
 
-  loadQuestion();
-}
+  studentIdText.textContent = `Roll Number: ${rollNumber}`;
 
-// LOAD QUESTION
-function loadQuestion() {
-  if (currentQuestion >= questions.length) {
-    return endQuiz();
-  }
+  currentQuestionIndex = 0;
+  score = 0;
+  timeLeft = totalTimeInSeconds;
+  testCompleted = false;
+  cheatingDetected = false;
+  nextBtn.style.display = "inline-block";
+  timerText.style.display = "block";
 
-  const qData = questions[currentQuestion];
-  document.getElementById("questionBox").textContent = qData.q || "(No text provided)";
-  const optionsBox = document.getElementById("optionsBox");
-  optionsBox.innerHTML = "";
+  showQuestion();
+  startTimer();
 
-  qData.options.forEach(opt => {
-    const div = document.createElement("div");
-    div.classList.add("option");
-    div.textContent = opt;
-    div.onclick = () => checkAnswer(opt);
-    optionsBox.appendChild(div);
+  // Request fullscreen mode on login
+  document.documentElement.requestFullscreen().catch(() => {
+    console.log("Fullscreen request failed or was denied.");
   });
-
-  // Reset and start timer
-  timeLeft = 60;
-  document.getElementById("timer").textContent = `Time: ${timeLeft}s`;
-  clearInterval(timer);
-  timer = setInterval(updateTimer, 1000);
 }
 
-function updateTimer() {
-  timeLeft--;
-  document.getElementById("timer").textContent = `Time: ${timeLeft}s`;
-  if (timeLeft <= 0) {
-    nextQuestion();
-  }
+function showQuestion() {
+  const currentQuestion = allQuestions[currentQuestionIndex];
+  questionText.textContent = currentQuestion.q;
+
+  optionsContainer.innerHTML = "";
+
+  currentQuestion.options.forEach((option, index) => {
+    const optionElem = document.createElement("div");
+    optionElem.className = "option";
+    optionElem.textContent = option;
+    optionElem.onclick = () => selectOption(optionElem, option);
+    optionsContainer.appendChild(optionElem);
+  });
 }
 
-// CHECK ANSWER
-function checkAnswer(selected) {
-  if (selected === questions[currentQuestion].answer) {
+function selectOption(optionElem, selectedOption) {
+  if (testCompleted) return;
+
+  const currentQuestion = allQuestions[currentQuestionIndex];
+
+  if (selectedOption === currentQuestion.answer) {
     score++;
   }
-  nextQuestion();
+
+  // Remove previous selection
+  const allOptionElems = optionsContainer.querySelectorAll(".option");
+  allOptionElems.forEach((elem) => {
+    elem.classList.remove("selected");
+    elem.onclick = null;
+    elem.style.pointerEvents = "none";
+    elem.style.backgroundColor = "";
+    elem.style.color = "";
+  });
+
+  // Add selected class to the clicked option
+  optionElem.classList.add("selected");
+
+  nextBtn.style.display = "inline-block";
 }
 
-// NEXT QUESTION
 function nextQuestion() {
-  clearInterval(timer);
-  currentQuestion++;
-  loadQuestion();
+  currentQuestionIndex++;
+  if (currentQuestionIndex >= allQuestions.length) {
+    endTest();
+  } else {
+    showQuestion();
+    nextBtn.style.display = "none";
+  }
 }
 
-// END QUIZ
-function endQuiz() {
+function startTimer() {
+  timerText.textContent = `Time Left: ${formatTime(timeLeft)}`;
+  timer = setInterval(() => {
+    timeLeft--;
+    timerText.textContent = `Time Left: ${formatTime(timeLeft)}`;
+
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      endTest();
+    }
+  }, 1000);
+}
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+}
+
+// Cheating detection handlers
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && !testCompleted) {
+    cheatingDetected = true;
+    alert("Test ended due to switching tabs or background apps!");
+    endTest();
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  // Detect F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+  if (
+    !testCompleted &&
+    (e.key === "F12" ||
+      (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) ||
+      (e.ctrlKey && (e.key === "U" || e.key === "S")))
+  ) {
+    cheatingDetected = true;
+    alert("Test ended due to forbidden keyboard action!");
+    e.preventDefault();
+    endTest();
+  }
+});
+
+// Prevent right-click context menu
+document.addEventListener("contextmenu", (e) => {
+  if (!testCompleted) {
+    e.preventDefault();
+    alert("Right-click is disabled during the test.");
+  }
+});
+
+// Detect exit from fullscreen (Escape key or otherwise)
+document.addEventListener("fullscreenchange", () => {
+  if (!document.fullscreenElement && !testCompleted && document.getElementById("quizPage") && !document.getElementById("quizPage").classList.contains("hidden")) {
+    cheatingDetected = true;
+    alert("Test ended because you exited fullscreen mode!");
+    endTest();
+  }
+});
+
+function endTest() {
+  testCompleted = true;
   clearInterval(timer);
+
   document.getElementById("quizPage").classList.add("hidden");
   document.getElementById("resultPage").classList.remove("hidden");
-  // FIXED: your HTML uses id="scoreBox"
-  document.getElementById("scoreBox").textContent = `You scored ${score} / ${questions.length}`;
+
+  // Get roll number from studentId element
+  const rollNumber = studentIdText.textContent.replace("Roll Number: ", "").trim();
+
+  // Show roll number above the score
+  scoreBox.innerHTML = `<div style="font-weight:bold;margin-bottom:8px;">Roll Number: ${rollNumber}</div>` +
+    (cheatingDetected
+      ? `Test ended due to cheating or switching apps. Your score is ${score} out of ${allQuestions.length}.`
+      : `Your score is ${score} out of ${allQuestions.length}.`);
+
+  timerText.style.display = "none";
+  nextBtn.style.display = "none";
+
+  // Ensure result works even in fullscreen
+  if (document.fullscreenElement) {
+    document.getElementById("resultPage").requestFullscreen().catch(err => {
+      console.warn("Failed to keep fullscreen for result:", err);
+    });
+  }
 }
+
+window.goToLogin = goToLogin;// Make goToLogin globally accessible for HTML onclick
+
+
+
+window.nextQuestion = nextQuestion;window.login = login;window.goToLogin = goToLogin;
+window.goToLogin = goToLogin;// Make goToLogin globally accessible for HTML onclick
+
+
+
+window.nextQuestion = nextQuestion;window.login = login;window.goToLogin = goToLogin;
