@@ -9,6 +9,8 @@ const firebaseConfig = {
   appId: "1:207766817109:web:fcf9275cb39e994130c7dc",
   measurementId: "G-V6TGFDQ4K8"
 };
+
+// Initialize Firebase
 if (!window.firebase?.apps?.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -170,6 +172,8 @@ const allQuestions = [
 
 ];
 
+
+// Global variables
 let currentQuestionIndex = 0;
 let score = 0;
 let timeLeft = 30 * 60;
@@ -177,6 +181,7 @@ let timer;
 let cheatingDetected = false;
 let testCompleted = false;
 
+// DOM elements
 const questionText = document.getElementById("questionBox");
 const optionsContainer = document.getElementById("optionsBox");
 const timerText = document.getElementById("timer");
@@ -203,25 +208,37 @@ function login() {
     loginError.textContent = "Please enter both Roll Number and Password.";
     return;
   }
-  loginError.textContent = "";
 
-  document.getElementById("loginPage").classList.add("hidden");
-  document.getElementById("quizPage").classList.remove("hidden");
+  // Check if roll number already exists in Firebase
+  db.ref("studentResults")
+    .orderByChild("rollNumber")
+    .equalTo(rollNumber)
+    .once("value", (snapshot) => {
+      if (snapshot.exists()) {
+        loginError.textContent = "This roll number has already taken the test.";
+        return;
+      } else {
+        loginError.textContent = "";
 
-  studentIdText.textContent = `Roll Number: ${rollNumber}`;
+        document.getElementById("loginPage").classList.add("hidden");
+        document.getElementById("quizPage").classList.remove("hidden");
 
-  currentQuestionIndex = 0;
-  score = 0;
-  timeLeft = 30 * 60;
-  testCompleted = false;
-  cheatingDetected = false;
-  nextBtn.style.display = "none";
-  timerText.style.display = "block";
+        studentIdText.textContent = `Roll Number: ${rollNumber}`;
 
-  showQuestion();
-  startTimer();
+        currentQuestionIndex = 0;
+        score = 0;
+        timeLeft = 30 * 60;
+        testCompleted = false;
+        cheatingDetected = false;
+        nextBtn.style.display = "none";
+        timerText.style.display = "block";
 
-  document.documentElement.requestFullscreen().catch(() => {});
+        showQuestion();
+        startTimer();
+
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    });
 }
 
 function showQuestion() {
@@ -247,14 +264,12 @@ function selectOption(optionElem, selectedOption) {
     score++;
   }
 
-  // Remove previous selection and disable all options
+  // Disable further selection
   const allOptionElems = optionsContainer.querySelectorAll(".option");
   allOptionElems.forEach((elem) => {
     elem.classList.remove("selected");
     elem.onclick = null;
     elem.style.pointerEvents = "none";
-    elem.style.backgroundColor = "";
-    elem.style.color = "";
   });
 
   optionElem.classList.add("selected");
@@ -289,7 +304,7 @@ function formatTime(seconds) {
   return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 }
 
-// Cheating detection handlers
+// Cheating detection
 document.addEventListener("visibilitychange", () => {
   if (document.hidden && !testCompleted) {
     cheatingDetected = true;
@@ -320,16 +335,26 @@ document.addEventListener("contextmenu", (e) => {
 });
 
 document.addEventListener("fullscreenchange", () => {
-  if (!document.fullscreenElement && !testCompleted && document.getElementById("quizPage") && !document.getElementById("quizPage").classList.contains("hidden")) {
+  if (
+    !document.fullscreenElement &&
+    !testCompleted &&
+    document.getElementById("quizPage") &&
+    !document.getElementById("quizPage").classList.contains("hidden")
+  ) {
     cheatingDetected = true;
     alert("Test ended because you exited fullscreen mode!");
     endTest();
   }
 });
 
-// Store student result in Firebase
+// ✅ Store student result in Firebase
 function storeStudentResult(rollNumber, score) {
-  db.ref("studentResults/" + rollNumber).set({ rollNumber, score });
+  const resultRef = db.ref("studentResults").push();
+  resultRef.set({
+    rollNumber: rollNumber,
+    score: score,
+    timestamp: new Date().toISOString()
+  });
 }
 
 function endTest() {
@@ -342,7 +367,8 @@ function endTest() {
   const rollNumber = studentIdText.textContent.replace("Roll Number: ", "").trim();
   storeStudentResult(rollNumber, score);
 
-  scoreBox.innerHTML = `<div style="font-weight:bold;margin-bottom:8px;">Roll Number: ${rollNumber}</div>` +
+  scoreBox.innerHTML =
+    `<div style="font-weight:bold;margin-bottom:8px;">Roll Number: ${rollNumber}</div>` +
     (cheatingDetected
       ? `Test ended due to cheating or switching apps. Your score is ${score} out of ${allQuestions.length}.`
       : `Your score is ${score} out of ${allQuestions.length}.`);
@@ -369,6 +395,7 @@ function adminLogin() {
   const user = document.getElementById("adminUser").value.trim();
   const pass = document.getElementById("adminPass").value.trim();
   const err = document.getElementById("adminLoginError");
+
   if (user === "admin" && pass === "admin123") {
     document.getElementById("adminLoginPage").classList.add("hidden");
     document.getElementById("adminPanel").classList.remove("hidden");
@@ -381,13 +408,17 @@ function adminLogin() {
 
 function showAllResults() {
   const table = document.getElementById("adminResultsTable");
-  table.innerHTML = `<tr><th>Roll Number</th><th>Score</th></tr>`;
-  db.ref("studentResults").once("value", snapshot => {
+  table.innerHTML = `<tr><th>Roll Number</th><th>Score</th><th>Submitted At</th></tr>`;
+  db.ref("studentResults").once("value", (snapshot) => {
     const results = snapshot.val() || {};
     Object.values(results)
       .sort((a, b) => a.rollNumber.localeCompare(b.rollNumber))
-      .forEach(r => {
-        table.innerHTML += `<tr><td>${r.rollNumber}</td><td>${r.score}</td></tr>`;
+      .forEach((r) => {
+        table.innerHTML += `<tr>
+          <td>${r.rollNumber}</td>
+          <td>${r.score}</td>
+          <td>${r.timestamp || "-"}</td>
+        </tr>`;
       });
   });
 }
@@ -397,7 +428,7 @@ function adminLogout() {
   document.getElementById("welcomePage").classList.remove("hidden");
 }
 
-// Expose only the correct functions globally
+// ✅ Expose functions globally
 window.goToLogin = goToLogin;
 window.login = login;
 window.nextQuestion = nextQuestion;
