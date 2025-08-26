@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>College Placement Aptitude Test</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
@@ -29,6 +31,7 @@
       <p class="welcome-title">Placement Aptitude Test Portal</p>
       <p class="tagline">Shaping Bright Futures Through Knowledge</p>
       <button onclick="goToLogin()">Start Your Test</button>
+      <button style="margin-top:12px;background:#232526;color:#fff;border:1px solid #00e6d3;" onclick="showAdminLogin()">Admin Login</button>
     </div>
   </div>
 
@@ -39,6 +42,15 @@
     <input type="password" id="password" placeholder="Enter Password" />
     <button onclick="login()">Login</button>
     <p id="loginError" class="error"></p>
+  </div>
+
+  <!-- Admin Login Page -->
+  <div id="adminLoginPage" class="hidden login-container">
+    <h2>Admin Login</h2>
+    <input type="text" id="adminUser" placeholder="Admin Username" />
+    <input type="password" id="adminPass" placeholder="Admin Password" />
+    <button onclick="adminLogin()">Login</button>
+    <p id="adminLoginError" class="error"></p>
   </div>
 
   <!-- Quiz Page -->
@@ -56,7 +68,14 @@
     </div>
   </div>
 
-
+  <!-- Admin Panel -->
+  <div id="adminPanel" class="hidden result-container">
+    <h2>All Student Results</h2>
+    <table id="adminResultsTable" style="width:100%;margin-bottom:18px;text-align:center;border-collapse:collapse;">
+      <!-- Populated by JS -->
+    </table>
+    <button onclick="adminLogout()">Logout</button>
+  </div>
 
   <!-- Result Page -->
   <div id="resultPage" class="hidden result-container">

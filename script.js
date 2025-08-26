@@ -1,3 +1,19 @@
+// ✅ Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyBt6sfCYmc3wsQ-EoCZnQUe87Lnvm3YVbk",
+  authDomain: "amptest-258fd.firebaseapp.com",
+  databaseURL: "https://amptest-258fd-default-rtdb.firebaseio.com", // ✅ fixed
+  projectId: "amptest-258fd",
+  storageBucket: "amptest-258fd.appspot.com", // ✅ fixed
+  messagingSenderId: "207766817109",
+  appId: "1:207766817109:web:fcf9275cb39e994130c7dc",
+  measurementId: "G-V6TGFDQ4K8"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ✅ Questions array
 const allQuestions = [
   {
     q: "Question 1. A seller allows a discount of 5% on a watch. If he allows a discount of 7%, he earns ₹15 less in the profit. What is the marked price?",
@@ -153,206 +169,123 @@ const allQuestions = [
 
 ];
 
-const totalTimeInMinutes = 30;
-const totalTimeInSeconds = totalTimeInMinutes * 60;
-
-let currentQuestionIndex = 0;
+let currentQuestion = 0;
 let score = 0;
-let timeLeft = totalTimeInSeconds;
-let timer;
-let cheatingDetected = false;
-let testCompleted = false;
+let studentName = "";
+let rollNumber = "";
 
-const questionText = document.getElementById("questionBox");
-const optionsContainer = document.getElementById("optionsBox");
-const timerText = document.getElementById("timer");
-const scoreBox = document.getElementById("scoreBox");
-const nextBtn = document.getElementById("nextBtn");
-const studentIdText = document.getElementById("studentId");
-
-function goToLogin() {
-  document.getElementById("welcomePage").classList.add("hidden");
-  document.getElementById("loginPage").classList.remove("hidden");
+// ✅ Show Quiz
+function showQuiz() {
+  document.getElementById("loginPage").style.display = "none";
+  document.getElementById("quizPage").style.display = "block";
+  loadQuestion();
 }
 
-function login() {
-  const rollNumber = document.getElementById("rollNumber").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const loginError = document.getElementById("loginError");
+// ✅ Load Question
+function loadQuestion() {
+  const q = questions[currentQuestion];
+  document.getElementById("question").innerText = q.question;
+  document.getElementById("answers").innerHTML = "";
 
-  if (rollNumber === "" || password === "") {
-    loginError.textContent = "Please enter both Roll Number and Password.";
-    return;
-  }
-
-  loginError.textContent = "";
-
-  document.getElementById("loginPage").classList.add("hidden");
-  document.getElementById("quizPage").classList.remove("hidden");
-
-  studentIdText.textContent = `Roll Number: ${rollNumber}`;
-
-  currentQuestionIndex = 0;
-  score = 0;
-  timeLeft = totalTimeInSeconds;
-  testCompleted = false;
-  cheatingDetected = false;
-  nextBtn.style.display = "inline-block";
-  timerText.style.display = "block";
-
-  showQuestion();
-  startTimer();
-
-  // Request fullscreen mode on login
-  document.documentElement.requestFullscreen().catch(() => {
-    console.log("Fullscreen request failed or was denied.");
+  q.answers.forEach((ans, i) => {
+    document.getElementById("answers").innerHTML += `
+      <button onclick="checkAnswer(${i})">${ans}</button><br>
+    `;
   });
 }
 
-function showQuestion() {
-  const currentQuestion = allQuestions[currentQuestionIndex];
-  questionText.textContent = currentQuestion.q;
-
-  optionsContainer.innerHTML = "";
-
-  currentQuestion.options.forEach((option, index) => {
-    const optionElem = document.createElement("div");
-    optionElem.className = "option";
-    optionElem.textContent = option;
-    optionElem.onclick = () => selectOption(optionElem, option);
-    optionsContainer.appendChild(optionElem);
-  });
-}
-
-function selectOption(optionElem, selectedOption) {
-  if (testCompleted) return;
-
-  const currentQuestion = allQuestions[currentQuestionIndex];
-
-  if (selectedOption === currentQuestion.answer) {
+// ✅ Check Answer
+function checkAnswer(ans) {
+  if (ans === questions[currentQuestion].correct) {
     score++;
   }
-
-  // Remove previous selection
-  const allOptionElems = optionsContainer.querySelectorAll(".option");
-  allOptionElems.forEach((elem) => {
-    elem.classList.remove("selected");
-    elem.onclick = null;
-    elem.style.pointerEvents = "none";
-    elem.style.backgroundColor = "";
-    elem.style.color = "";
-  });
-
-  // Add selected class to the clicked option
-  optionElem.classList.add("selected");
-
-  nextBtn.style.display = "inline-block";
-}
-
-function nextQuestion() {
-  currentQuestionIndex++;
-  if (currentQuestionIndex >= allQuestions.length) {
-    endTest();
+  currentQuestion++;
+  if (currentQuestion < questions.length) {
+    loadQuestion();
   } else {
-    showQuestion();
-    nextBtn.style.display = "none";
+    endQuiz();
   }
 }
 
-function startTimer() {
-  timerText.textContent = `Time Left: ${formatTime(timeLeft)}`;
-  timer = setInterval(() => {
-    timeLeft--;
-    timerText.textContent = `Time Left: ${formatTime(timeLeft)}`;
+// ✅ End Quiz
+function endQuiz() {
+  document.getElementById("quizPage").style.display = "none";
+  document.getElementById("resultPage").style.display = "block";
+  document.getElementById("score").innerText = score + " / " + questions.length;
 
-    if (timeLeft <= 0) {
-      clearInterval(timer);
-      endTest();
-    }
-  }, 1000);
+  storeStudentResult(rollNumber, score);
 }
 
-function formatTime(seconds) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+// ✅ Store Student Result in Firebase
+function storeStudentResult(rollNumber, score) {
+  db.ref("studentResults/" + rollNumber).set({
+    rollNumber: rollNumber,
+    studentName: studentName,
+    score: score
+  });
 }
 
-// Cheating detection handlers
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden && !testCompleted) {
-    cheatingDetected = true;
-    alert("Test ended due to switching tabs or background apps!");
-    endTest();
-  }
-});
+// ✅ Show All Results (for Admin)
+function showAllResults() {
+  document.getElementById("adminPage").style.display = "block";
+  document.getElementById("resultsTableBody").innerHTML = "";
 
-document.addEventListener("keydown", (e) => {
-  // Detect F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
-  if (
-    !testCompleted &&
-    (e.key === "F12" ||
-      (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) ||
-      (e.ctrlKey && (e.key === "U" || e.key === "S")))
-  ) {
-    cheatingDetected = true;
-    alert("Test ended due to forbidden keyboard action!");
-    e.preventDefault();
-    endTest();
-  }
-});
-
-// Prevent right-click context menu
-document.addEventListener("contextmenu", (e) => {
-  if (!testCompleted) {
-    e.preventDefault();
-    alert("Right-click is disabled during the test.");
-  }
-});
-
-// Detect exit from fullscreen (Escape key or otherwise)
-document.addEventListener("fullscreenchange", () => {
-  if (!document.fullscreenElement && !testCompleted && document.getElementById("quizPage") && !document.getElementById("quizPage").classList.contains("hidden")) {
-    cheatingDetected = true;
-    alert("Test ended because you exited fullscreen mode!");
-    endTest();
-  }
-});
-
-function endTest() {
-  testCompleted = true;
-  clearInterval(timer);
-
-  document.getElementById("quizPage").classList.add("hidden");
-  document.getElementById("resultPage").classList.remove("hidden");
-
-  // Get roll number from studentId element
-  const rollNumber = studentIdText.textContent.replace("Roll Number: ", "").trim();
-
-  // Show roll number above the score
-  scoreBox.innerHTML = `<div style="font-weight:bold;margin-bottom:8px;">Roll Number: ${rollNumber}</div>` +
-    (cheatingDetected
-      ? `Test ended due to cheating or switching apps. Your score is ${score} out of ${allQuestions.length}.`
-      : `Your score is ${score} out of ${allQuestions.length}.`);
-
-  timerText.style.display = "none";
-  nextBtn.style.display = "none";
-
-  // Ensure result works even in fullscreen
-  if (document.fullscreenElement) {
-    document.getElementById("resultPage").requestFullscreen().catch(err => {
-      console.warn("Failed to keep fullscreen for result:", err);
+  db.ref("studentResults").once("value", (snapshot) => {
+    snapshot.forEach((child) => {
+      const data = child.val();
+      const row = `<tr><td>${data.rollNumber}</td><td>${data.studentName}</td><td>${data.score}</td></tr>`;
+      document.getElementById("resultsTableBody").innerHTML += row;
     });
+  });
+}
+
+// ✅ Go to Login
+function goToLogin() {
+  document.getElementById("resultPage").style.display = "none";
+  document.getElementById("loginPage").style.display = "block";
+  currentQuestion = 0;
+  score = 0;
+}
+
+// ✅ Login (Student)
+function login() {
+  studentName = document.getElementById("studentName").value;
+  rollNumber = document.getElementById("rollNumber").value;
+
+  if (studentName && rollNumber) {
+    showQuiz();
+  } else {
+    alert("Enter both Name and Roll Number");
   }
 }
 
-window.goToLogin = goToLogin;// Make goToLogin globally accessible for HTML onclick
+// ✅ Admin Login
+function adminLogin() {
+  const adminPass = document.getElementById("adminPassword").value;
+  if (adminPass === "admin123") {
+    document.getElementById("adminLoginPage").style.display = "none";
+    showAllResults();
+  } else {
+    alert("Wrong password!");
+  }
+}
 
+// ✅ Show Admin Login Page
+function showAdminLogin() {
+  document.getElementById("loginPage").style.display = "none";
+  document.getElementById("adminLoginPage").style.display = "block";
+}
 
+// ✅ Admin Logout
+function adminLogout() {
+  document.getElementById("adminPage").style.display = "none";
+  document.getElementById("loginPage").style.display = "block";
+}
 
-window.nextQuestion = nextQuestion;window.login = login;window.goToLogin = goToLogin;
-window.goToLogin = goToLogin;// Make goToLogin globally accessible for HTML onclick
-
-
-
-window.nextQuestion = nextQuestion;window.login = login;window.goToLogin = goToLogin;
+// ✅ Expose Functions Globally (only once)
+window.goToLogin = goToLogin;
+window.login = login;
+window.checkAnswer = checkAnswer;
+window.showAdminLogin = showAdminLogin;
+window.adminLogin = adminLogin;
+window.adminLogout = adminLogout;
