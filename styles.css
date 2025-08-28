@@ -506,3 +506,90 @@ body.fullscreen {
     font-size: 0.9rem;
   }
 }
+
+/* ==================== */
+/* Admin Results Table - Coding Style Look */
+/* ==================== */
+#adminResultsTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #181c23;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 32px 0 rgba(0,230,211,0.10), 0 1.5px 8px 0 rgba(0,230,211,0.08);
+  margin-bottom: 18px;
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', 'Monaco', monospace;
+  font-size: 1.08rem;
+  letter-spacing: 0.5px;
+}
+
+#adminResultsTable th, #adminResultsTable td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid #232b36;
+}
+
+#adminResultsTable th {
+  background: linear-gradient(90deg, #232b36 0%, #232526 100%);
+  color: #00e6d3;
+  font-weight: 700;
+  font-size: 1.08rem;
+  border-bottom: 2px solid #00e6d3;
+  text-shadow: 0 2px 8px #00e6d3;
+  letter-spacing: 1px;
+}
+
+#adminResultsTable tr:last-child td {
+  border-bottom: none;
+}
+
+#adminResultsTable td {
+  color: #b2fefa;
+  background: rgba(34, 40, 49, 0.92);
+  transition: background 0.2s;
+  border-left: 3px solid transparent;
+}
+
+#adminResultsTable tr:hover td {
+  background: #232b36;
+  color: #00e6d3;
+  border-left: 3px solid #00e6d3;
+}
+
+#adminResultsTable td:first-child {
+  color: #ffb86c;
+  font-weight: 700;
+}
+
+#adminResultsTable td:nth-child(2) {
+  color: #50fa7b;
+  font-weight: 700;
+}
+
+#adminResultsTable td:nth-child(3) {
+  color: #8be9fd;
+  font-size: 0.98rem;
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', 'Monaco', monospace;
+}
+
+/* Responsive for admin table */
+@media (max-width: 600px) {
+  #adminResultsTable th, #adminResultsTable td {
+    padding: 8px 6px;
+    font-size: 0.98rem;
+  }
+}
+
+/* The admin login already uses .login-container, input, button, .error, etc.
+   No extra CSS is needed for admin login to match student login.
+   If you want to further customize, you can add a comment here. */
+
+/* Example: If you want to specifically target admin login fields, you can use: */
+/*
+#adminLoginPage input[type="text"],
+#adminLoginPage input[type="password"],
+#adminLoginPage button {
+  // Optional: Add overrides here if needed
+}
+*/

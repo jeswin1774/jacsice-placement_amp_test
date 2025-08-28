@@ -19,164 +19,282 @@ const db = firebase.database();
 // ✅ Questions array
 const allQuestions = [
   {
-    q: "Question 1. A seller allows a discount of 5% on a watch. If he allows a discount of 7%, he earns ₹15 less in the profit. What is the marked price?",
-    options: ["₹ 697.50", "₹ 712.50", "₹ 750", "₹ 800"],
-    answer: "₹ 750"
+    q: "1. Arrange the given fractions in ascending order 9/17, 7/23, 11/21 and 13/19",
+    options: [
+      "13/19, 9/17, 7/23, 11/21",
+      "9/17, 11/21, 7/23, 13/19",
+      "7/23, 11/21, 9/17, 13/19",
+      "11/21, 9/17, 7/23, 13/19",
+      "None of these"
+    ],
+    answer: "7/23, 11/21, 9/17, 13/19"
   },
   {
-    q: "Question 2. Jatin bought a refrigerator with 20% discount on the labelled price. He had to pay ₹8000. At what price did he buy the refrigerator?",
-    options: ["₹ 10000", "₹ 12000", "₹ 15000", "₹ 8000"],
-    answer: "₹ 10000"
+    q: "2.3^0.6×81×91.3×270.2=3?",
+    options: [
+      "7.8",
+      "3.9",
+      "4.5",
+      "5.4",
+      "None of these"
+    ],
+    answer: "3.9"
   },
   {
-    q: "Question 3. A sells a scooter priced at ₹36000. He gives a discount of 8% on the first ₹20000 and 5% on the next ₹10000. How much discount can he afford on the remaining ₹6000 if he is to make an overall profit of 8%?",
-    options: ["₹ 12250", "₹ 12500", "₹ 12800", "₹ 13500"],
-    answer: "₹ 12500"
-  },
-  {
-    q: "Question 4. A tradesman gives 4% di2scount on the marked price and gives 1 article free for buying every 15 articles and thus gains 35%. The marked price is above the cost price by:",
-    options: ["20%", "39%", "40%", "50%"],
-    answer: "50%"
-  },
-  {
-    q: "Question 5. A trader marked the selling price of an article at 10% above the cost price. At the time of selling, he allows certain discount and suffers a loss of 1%. He allowed a discount of:",
-    options: ["9%", "10%", "10.5%", "11%"],
-    answer: "10%"
-     },
-
-  {
-    q: "Question 6. A man marked price of a watch 20% above its cost price. He then allowed a discount of 10%. Find his gain percent?",
-    options: ["8%", "10%", "12%", "15%"],
-    answer: "8%"
-  },
-  {
-    q: "Question 7. Three successive discounts of 10%, 12% and 15% amount to a single discount of:",
-    options: ["33.68%", "32.68%", "36.68%", "38.25%"],
-    answer: "33.68%"
-  },
-  {
-    q: "Question 8. A discount series of p%, q% and r% is same as a single discount of:",
-    options: ["100 - [p + q + r - (pq/100) - (qr/100) - (rp/100) + (pqr/10000)] %", "p + q + r %", "p - q - r %", "None of these"],
-    answer: "100 - [p + q + r - (pq/100) - (qr/100) - (rp/100) + (pqr/10000)] %"
-  },
-  {
-    q: "Question 9. Three successive discounts of 20% on the marked price of a commodity amount to a net discount of:",
-    options: ["48%", "49%", "50%", "50.2%"],
-    answer: "50.2%"
-  },
-  {
-    q: "Question 10. An article is listed at ₹900 and two successive discounts of 8% and 8% are given on it. How much would the seller gain or lose, if he gives a single discount of 16% instead of two discounts?",
-    options: ["Gain of ₹4.76", "Loss of ₹4.76", "Gain of ₹5.76", "Loss of ₹5.76"],
-    answer: "Loss of ₹5.76"
-  },
-  {
-    q: "Question 11. Two shopkeepers announce the same price of ₹700 for a sewing machine. The first offers successive discounts of 30% and 6% while the second offers successive discounts of 20% and 16%. The shopkeeper that offers better discount, charges ______ less than the other shopkeeper.",
-    options: ["₹9.80", "₹16.80", "₹22.40", "₹36.40"],
-    answer: "₹16.80"
-  },
-  {
-    q: "Question 12. A company offers three types of successive discounts (i) 25% and 15%; (ii) 30% and 10%; (iii) 35% and 5%. Which offer is the best for a customer?",
-    options: ["First offer", "Second offer", "Third offer", "Any one; all are equally good"],
-    answer: "Second offer"
-  },
-  {
-    q: "Question 13. On a ₹1000 payment order, a person has choice between 3 successive discounts of 10%, 10% and 30%, and 3 successive discounts of 40%, 5% and 5%. By choosing the better one he can save (in rupees):",
-    options: ["200", "255", "400", "433"],
-    answer: "255"
-  },
-  {
-    q: "Question 14. A shopkeeper gives 3 consecutive discounts of 10%, 15% and 15% after which he sells his goods at a percentage profit of 30.05 percent on the cost price. Find the value of the percentage profit that the shopkeeper would have earned if he had given discounts of 10% and 15% only.",
-    options: ["53%", "62.5%", "68.6%", "72.5%"],
-    answer: "62.5%"
-  },
-  {
-    q: "Question 15. A shopkeeper gives two successive discounts on an article marked ₹450. The first discount is 10%. If the customer pays ₹344.25 for the article, the second discount given is:",
-    options: ["10%", "12%", "14%", "15%"],
-    answer: "15%"
-  },
-  {
-    q: "Question 16. The marked price of a watch was ₹820. A man bought the same for ₹707.20 after getting two successive discounts of which the first was 20%. The rate of the second discount is:",
-    options: ["10%", "12%", "15%", "18%"],
-    answer: "12%"
-  },
-  {
-    q: "Question 17. A shopkeeper purchased 150 identical pieces of calculator at the rate of ₹250 each. He spent an amount of ₹2500 on transport and packing. He fixed the labelled price of each calculator at ₹320. However, he decided to give a discount of 5% on the labelled price. What is the percentage profit earned by him?",
-    options: ["12%", "14%", "15%", "16%"],
-    answer: "15%"
-  },
-  {
-    q: "Question 18. A person first increases the price of a commodity by 10% and then announces a discount of 15% on that. The actual discount on the original price is:",
-    options: ["5%", "6.5%", "7.5%", "12.5%"],
-    answer: "6.5%"
-  },
-  {
-    q: "Question 19. Raman bought a camera and paid 20% less than its original price. He sold it at 40% profit on the price he had paid. The percentage of profit earned by Raman on the original price was:",
-    options: ["12", "15", "22", "32"],
+    q: "3. The difference between two numbers is 3 and the difference between their squares is 63. What is the larger number?",
+    options: [
+      "12",
+      "9",
+      "15",
+      "Cannot be determined",
+      "None of these"
+    ],
     answer: "12"
   },
   {
-    q: "Question 20. A trader marked the price of a product in such a way that it is 20% more than the cost price. If he allows 10% discount on the marked price to the customer then his gain is:",
-    options: ["8%", "10%", "15%", "20%"],
-    answer: "8%"
+    q: "4. What is the smallest digit which should replace * in the number 296*12 to make it divisible by 12?",
+    options: [
+      "1",
+      "2",
+      "3",
+      "4",
+      "None of these"
+    ],
+    answer: "2"
   },
   {
-    q: "Question 21. A trader marked the price of his commodity so as to include a profit of 25%. He allowed discount of 16% on the marked price. His actual profit was:",
-    options: ["5%", "9%", "16%", "25%"],
-    answer: "9%"
+    q: "5. A, B, C, D and E are five consecutive odd numbers. The sum of A and C is 146. What is the value of E?",
+    options: [
+      "75",
+      "81",
+      "71",
+      "79",
+      "None of these"
+    ],
+    answer: "79"
   },
   {
-    q: "Question 22. A tradesman marks his goods 30% above the C.P. If he allows a discount of 6 1/4 %, then his gain percent is:",
-    options: ["21 7/20 %", "22%", "23 3/4 %", "None of these"],
-    answer: "22%"
+    q: "6. What is the largest number that can exactly divide 52, 65 and 165?",
+    options: [
+      "11",
+      "13",
+      "14",
+      "12",
+      "none of these"
+    ],
+    answer: "13"
   },
   {
-    q: "Question 23. A shopkeeper earns a profit of 12% on selling a book at 10% discount on the printed price. The ratio of the cost price and the printed price of the book is:",
-    options: ["45 : 56", "45 : 61", "50 : 61", "50 : 65"],
-    answer: "45 : 56"
+    q: "7. If the HCF of two numbers is 11 and their LCM is 7700. If one of these numbers is 275, then what is the other number?",
+    options: [
+      "279",
+      "283",
+      "308",
+      "318",
+      "None of these"
+    ],
+    answer: "308"
   },
   {
-    q: "Question 24. The price of an article is raised by 30% and then two successive discounts of 10% each are allowed. Ultimately, the price of the article is:",
-    options: ["Decreased by 5.3%", "Increased by 3%", "Increased by 5.3%", "Increased by 10%"],
-    answer: "Increased by 3%"
+    q: "8. Find the smallest number which gives a remainder 5, when divided by any of the numbers 8, 12 and 15?",
+    options: [
+      "120",
+      "240",
+      "125",
+      "65",
+      "101"
+    ],
+    answer: "125"
   },
   {
-    q: "Question 25. A retailer buys 30 articles from a wholesaler at the price of 27. If he sells them at their marked price, the gain percent in the transaction is:",
-    options: ["9 1/11 %", "10%", "11 1/9 %", "16 2/3 %"],
-    answer: "11 1/9 %"
+    q: "9. What will be the greatest number that divides 68, 59 and 43 leaving the remainder 8, 9 and 3 respectively?",
+    options: [
+      "8",
+      "10",
+      "24",
+      "35",
+      "None of these"
+    ],
+    answer: "10"
   },
   {
-    q: "Question 26. By selling an article at 2/5 of the marked price, there is a loss of 25%. The ratio of the marked price and the cost price of the article is:",
-    options: ["2 : 5", "5 : 2", "8 : 15", "15 : 8"],
-    answer: "8 : 15"
+    q: "10. Find the greatest number of 4 digits, which is exactly divisible by 8,12,18,15 and 20.",
+    options: [
+      "9840",
+      "9720",
+      "9280",
+      "9630",
+      "none of these"
+    ],
+    answer: "9720"
   },
   {
-    q: "Question 27. A shopkeeper fixes the marked price of an item 35% above its cost price. The percentage of discount allowed to gain 8% is:",
-    options: ["20%", "25%", "31%", "43%"],
-    answer: "25%"
+    q: "11. The distance between two stations A and B is 778 km. A train covers the journey from A to B at 84 km per hour and returns back to A with a uniform speed of 56 km per hour. Find the average speed of train during the whole journey.",
+    options: [
+      "60.3 km/hr",
+      "35.0 km/hr",
+      "57.5 km/hr",
+      "57.5 km/hr"
+    ],
+    answer: "67.2 km/hr"
   },
   {
-    q: "Question 28. A retailer allows a trade discount of 20% and a cash discount of 5% on the cost price. If he sells his goods at the marked price, one of the discounts must be adjusted. What is his total gain percent?",
-    options: ["20%", "22%", "24%", "25%"],
-    answer: "25%"
+    q: "12. The mean weight of a group of seven boys is 56 kg. The individual weights (in kg) of six of them are 52, 57, 55, 60, 59 and 55. Find the weight of the seventh boy.",
+    options: [
+      "64",
+      "54",
+      "88",
+      "28"
+    ],
+    answer: "64"
   },
   {
-    q: "Question 29. Mohan sold an article for ₹1500. Had he offered a discount of 10% on the selling price he would have earned a profit of 8%. What is the cost price?",
-    options: ["₹ 1225", "₹ 1250", "₹ 1280", "₹ 1350"],
-    answer: "₹ 1250"
+    q: "13. The following observations are 8, 11, 12, x+6, 17, 18, 23. The median of the data is 15 find the value of x.",
+    options: [
+      "9",
+      "7",
+      "8",
+      "6"
+    ],
+    answer: "9"
   },
   {
-  q: "Question 30. A train 150 meters long passes a pole in 15 seconds. What is the speed of the train in km/h?",
-  options: ["30 km/h", "36 km/h", "54 km/h", "60 km/h"],
-  answer: "36 km/h"
+    q: "14. Class A has 15 students with mean marks of 60, and Class B has 12 students with mean marks of 48. Calculate the combined mean.",
+    options: [
+      "54.8",
+      "54",
+      "55.2",
+      "56"
+    ],
+    answer: "54.8"
   },
-
+  {
+    q: "15. If the mean and mode of some data are 4 & 10 respectively its median will be",
+    options: [
+      "8",
+      "6",
+      "7",
+      "9"
+    ],
+    answer: "6"
+  },
+  {
+    q: "16. Sonali invests 15% of her monthly salary in insurance policies. She spends 55% of her monthly salary in shopping and on household expenses. She saves the remaining amount of ₹12750. What is Sonali’s monthly income?",
+    options: [
+      "42,500",
+      "38,800",
+      "40,000",
+      "35,500",
+      "None of these"
+    ],
+    answer: "42,500"
+  },
+  {
+    q: "17. The price of a car is ₹325000. It was insured to 85% of its price. The car was damaged completely in an accident and the insurance company paid 90% of the insurance. What was the difference between the price of the car and the amount received?",
+    options: [
+      "32,500",
+      "48,750",
+      "76,375",
+      "81,250",
+      "None of these"
+    ],
+    answer: "76,375"
+  },
+  {
+    q: "18. In a college election between two students, 10% of the votes cast are invalid. The winner gets 70% of the valid votes and defeats the loser by 1800 votes. How many votes were totally cast?",
+    options: [
+      "1800",
+      "7200",
+      "5000",
+      "3600",
+      "None of these"
+    ],
+    answer: "7200"
+  },
+  {
+    q: "19. The sale of Company N is 40% less than that of Company T. Then by what per cent is the sale of company T more than that of N?",
+    options: [
+      "66%",
+      "20%",
+      "40%",
+      "10%",
+      "None of these"
+    ],
+    answer: "66%"
+  },
+  {
+    q: "20. When the cost of petroleum increases by 40%, a man reduces his annual consumption by 20%. Find the percentage change in his annual expenditure on petroleum.",
+    options: [
+      "20%",
+      "16%",
+      "12%",
+      "40%",
+      "None of these"
+    ],
+    answer: "12%"
+  },
+  {
+    q: "21. A certain amount is to be distributed among Samiksha, Purva and Neha in the proportion of 5:3:4. If the difference between Purva's and Samiksha's share is 1200. How much did Neha get?",
+    options: [
+      "2400",
+      "1600",
+      "2200",
+      "Cannot be determined",
+      "None of these"
+    ],
+    answer: "1600"
+  },
+  {
+    q: "22. A sum of money is divided among A, B, C and D in the ratio 5:8:9:11. If the share of B is ₹2475 more than the share of A then what is the total amount of money of A & C together?",
+    options: [
+      "9900",
+      "11550",
+      "10725",
+      "9075",
+      "None of these"
+    ],
+    answer: "10725"
+  },
+  {
+    q: "23. A, B and C divide an amount of ₹4000 amongst themselves in the ratio of 2:5:1 respectively. If an amount of 800 is added to each of their shares, what will be the new ratio of their shares of the amount?",
+    options: [
+      "18:33:13",
+      "6:7:4",
+      "7:8:9",
+      "3:6:2",
+      "None of these"
+    ],
+    answer: "6:7:4"
+  },
+  {
+    q: "24. If 1/4th area of a rectangular plot is 2700 sq m and the width of that plot is 90 m, what is the ratio between the width and the length of the plot?",
+    options: [
+      "3:4",
+      "4:3",
+      "3:1",
+      "1:3",
+      "None of these"
+    ],
+    answer: "3:4"
+  },
+  {
+    q: "25. There are 2304 workers in company A and 2816 in company B. What is the ratio of workers in company A to that of B?",
+    options: [
+      "7:13",
+      "13:7",
+      "9:11",
+      "11:9",
+      "None of these"
+    ],
+    answer: "9:11"
+  }
 ];
 
 
 // Global variables
 let currentQuestionIndex = 0;
 let score = 0;
-let timeLeft = 30 * 60;
+let timeLeft = 25 * 60; // Changed from 30 * 60 to 25 * 60 (25 minutes)
 let timer;
 let cheatingDetected = false;
 let testCompleted = false;
@@ -188,6 +306,10 @@ const timerText = document.getElementById("timer");
 const scoreBox = document.getElementById("scoreBox");
 const nextBtn = document.getElementById("nextBtn");
 const studentIdText = document.getElementById("studentId");
+
+/// <reference path="https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js" />
+/// <reference path="https://www.gstatic.com/firebasejs/9.1.2/firebase-database.js" />
+
 
 // Navigation functions
 function goToLogin() {
@@ -227,7 +349,7 @@ function login() {
 
         currentQuestionIndex = 0;
         score = 0;
-        timeLeft = 30 * 60;
+        timeLeft = 25 * 60; // Changed from 30 * 60 to 25 * 60 (25 minutes)
         testCompleted = false;
         cheatingDetected = false;
         nextBtn.style.display = "none";
@@ -253,36 +375,49 @@ function showQuestion() {
     optionElem.onclick = () => selectOption(optionElem, option);
     optionsContainer.appendChild(optionElem);
   });
+
+  // Remove selection and enable all options for new question
+  nextBtn.style.display = "none";
 }
+
+let selectedOptionValue = null;
 
 function selectOption(optionElem, selectedOption) {
   if (testCompleted) return;
 
-  const currentQuestion = allQuestions[currentQuestionIndex];
-
-  if (selectedOption === currentQuestion.answer) {
-    score++;
-  }
-
-  // Disable further selection
+  // Remove previous selection
   const allOptionElems = optionsContainer.querySelectorAll(".option");
   allOptionElems.forEach((elem) => {
     elem.classList.remove("selected");
-    elem.onclick = null;
-    elem.style.pointerEvents = "none";
   });
 
+  // Mark current as selected
   optionElem.classList.add("selected");
+  selectedOptionValue = selectedOption;
   nextBtn.style.display = "inline-block";
 }
 
 function nextQuestion() {
+  // Score only if selectedOptionValue is correct
+  const currentQuestion = allQuestions[currentQuestionIndex];
+  if (selectedOptionValue === currentQuestion.answer) {
+    score++;
+  }
+
+  // Disable further selection for this question
+  const allOptionElems = optionsContainer.querySelectorAll(".option");
+  allOptionElems.forEach((elem) => {
+    elem.onclick = null;
+    elem.style.pointerEvents = "none";
+  });
+
+  // Prepare for next question
   currentQuestionIndex++;
+  selectedOptionValue = null;
   if (currentQuestionIndex >= allQuestions.length) {
     endTest();
   } else {
     showQuestion();
-    nextBtn.style.display = "none";
   }
 }
 
@@ -383,6 +518,7 @@ function endTest() {
 
 // Admin login and result view
 function showAdminLogin() {
+  // Show the admin login page styled like student login
   document.getElementById("welcomePage").classList.add("hidden");
   document.getElementById("loginPage").classList.add("hidden");
   document.getElementById("adminLoginPage").classList.remove("hidden");
@@ -396,7 +532,7 @@ function adminLogin() {
   const pass = document.getElementById("adminPass").value.trim();
   const err = document.getElementById("adminLoginError");
 
-  if (user === "admin" && pass === "admin123") {
+  if (user === "admin" && pass === "admin12345") {
     document.getElementById("adminLoginPage").classList.add("hidden");
     document.getElementById("adminPanel").classList.remove("hidden");
     showAllResults();
@@ -433,5 +569,7 @@ window.goToLogin = goToLogin;
 window.login = login;
 window.nextQuestion = nextQuestion;
 window.showAdminLogin = showAdminLogin;
+window.adminLogin = adminLogin;
+window.adminLogout = adminLogout;
 window.adminLogin = adminLogin;
 window.adminLogout = adminLogout;
