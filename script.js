@@ -347,11 +347,12 @@ document.addEventListener("DOMContentLoaded", function() {
           document.getElementById("loginPage").classList.add("hidden");
           document.getElementById("quizPage").classList.remove("hidden");
 
+          // ✅ Fixed
           studentIdText.textContent = `Roll Number: ${rollNumber}`;
 
           currentQuestionIndex = 0;
           score = 0;
-          timeLeft = 25 * 60; // Changed from 30 * 60 to 25 * 60 (25 minutes)
+          timeLeft = 25 * 60;
           testCompleted = false;
           cheatingDetected = false;
           nextBtn.style.display = "none";
@@ -424,6 +425,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   function startTimer() {
+    // ✅ Fixed
     timerText.textContent = `Time Left: ${formatTime(timeLeft)}`;
     timer = setInterval(() => {
       timeLeft--;
@@ -438,6 +440,7 @@ document.addEventListener("DOMContentLoaded", function() {
   function formatTime(seconds) {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
+    // ✅ Fixed
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   }
 
@@ -485,11 +488,12 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   // ✅ Store student result in Firebase
-  function storeStudentResult(rollNumber, score) {
+  function storeStudentResult(rollNumber, score, cheating) {
     const resultRef = db.ref("studentResults").push();
     resultRef.set({
       rollNumber: rollNumber,
       score: score,
+      cheating: !!cheating, // Ensure boolean
       timestamp: new Date().toISOString()
     });
   }
@@ -502,8 +506,10 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("resultPage").classList.remove("hidden");
 
     const rollNumber = studentIdText.textContent.replace("Roll Number: ", "").trim();
-    storeStudentResult(rollNumber, score);
+    // Store cheatingDetected flag in Firebase
+    storeStudentResult(rollNumber, score, cheatingDetected);
 
+    // ✅ Fixed
     scoreBox.innerHTML =
       `<div style="font-weight:bold;margin-bottom:8px;">Roll Number: ${rollNumber}</div>` +
       (cheatingDetected
@@ -546,19 +552,59 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function showAllResults() {
     const table = document.getElementById("adminResultsTable");
-    table.innerHTML = `<tr><th>Roll Number</th><th>Score</th><th>Submitted At</th></tr>`;
+    table.innerHTML = `<tr>
+      <th>Roll Number</th>
+      <th>Score</th>
+      <th>Submitted At</th>
+      <th>Cheating</th>
+      <th>Delete</th>
+    </tr>`;
     db.ref("studentResults").once("value", (snapshot) => {
       const results = snapshot.val() || {};
-      Object.values(results)
-        .sort((a, b) => a.rollNumber.localeCompare(b.rollNumber))
-        .forEach((r) => {
-          table.innerHTML += `<tr>
+      Object.entries(results)
+        .sort((a, b) => a[1].rollNumber.localeCompare(b[1].rollNumber))
+        .forEach(([key, r]) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
             <td>${r.rollNumber}</td>
             <td>${r.score}</td>
             <td>${r.timestamp || "-"}</td>
-          </tr>`;
+            <td style="text-align:center;">${r.cheating ? "✔" : ""}</td>
+            <td>
+              <button style="background:#ff4757;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;" onclick="deleteStudentResult('${key}')">Delete</button>
+            </td>
+          `;
+          table.appendChild(row);
         });
     });
+
+    // Add Delete All button if not already present
+    let delAllBtn = document.getElementById("deleteAllBtn");
+    if (!delAllBtn) {
+      delAllBtn = document.createElement("button");
+      delAllBtn.id = "deleteAllBtn";
+      delAllBtn.textContent = "Delete All";
+      delAllBtn.style = "background:#ff4757;color:#fff;border:none;padding:8px 24px;border-radius:8px;cursor:pointer;margin-bottom:12px;margin-top:8px;font-weight:700;font-size:1.08rem;";
+      delAllBtn.onclick = deleteAllResults;
+      table.parentNode.insertBefore(delAllBtn, table);
+    }
+  }
+
+  function deleteAllResults() {
+    if (confirm("Are you sure you want to delete ALL student results? This cannot be undone.")) {
+      db.ref("studentResults").remove().then(() => {
+        showAllResults();
+      });
+    }
+  }
+
+  // Add this function to handle deletion
+  function deleteStudentResult(key) {
+    if (confirm("Are you sure you want to delete this student's result?")) {
+      db.ref("studentResults/" + key).remove().then(() => {
+        showAllResults();
+      });
+    }
   }
 
   function adminLogout() {
@@ -573,4 +619,6 @@ document.addEventListener("DOMContentLoaded", function() {
   window.showAdminLogin = showAdminLogin;
   window.adminLogin = adminLogin;
   window.adminLogout = adminLogout;
+  window.deleteStudentResult = deleteStudentResult;
+  window.deleteAllResults = deleteAllResults;
 });

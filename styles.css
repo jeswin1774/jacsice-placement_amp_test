@@ -593,3 +593,12 @@ body.fullscreen {
   // Optional: Add overrides here if needed
 }
 */
+
+#adminPanel.result-container {
+  max-width: 900px;
+  width: 98vw;
+  min-width: 320px;
+  margin: 32px auto;
+  padding: 32px 24px 32px 24px;
+  box-sizing: border-box;
+}
