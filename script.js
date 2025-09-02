@@ -333,6 +333,12 @@ document.addEventListener("DOMContentLoaded", function() {
       return;
     }
 
+    // Password must be last 3 digits of roll number
+    if (rollNumber.length < 3 || password !== rollNumber.slice(-3)) {
+      loginError.textContent = "Password must be the last 3 digits of your Roll Number.";
+      return;
+    }
+
     // Check if roll number already exists in Firebase
     db.ref("studentResults")
       .orderByChild("rollNumber")
@@ -444,9 +450,13 @@ document.addEventListener("DOMContentLoaded", function() {
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   }
 
-  // Cheating detection
+  // Cheating detection - Only for test (quizPage visible)
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden && !testCompleted) {
+    if (
+      document.hidden &&
+      !testCompleted &&
+      !document.getElementById("quizPage").classList.contains("hidden")
+    ) {
       cheatingDetected = true;
       alert("Test ended due to switching tabs or background apps!");
       endTest();
@@ -456,6 +466,7 @@ document.addEventListener("DOMContentLoaded", function() {
   document.addEventListener("keydown", (e) => {
     if (
       !testCompleted &&
+      !document.getElementById("quizPage").classList.contains("hidden") &&
       (e.key === "F12" ||
         (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) ||
         (e.ctrlKey && (e.key === "U" || e.key === "S")))
@@ -468,7 +479,10 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   document.addEventListener("contextmenu", (e) => {
-    if (!testCompleted) {
+    if (
+      !testCompleted &&
+      !document.getElementById("quizPage").classList.contains("hidden")
+    ) {
       e.preventDefault();
       alert("Right-click is disabled during the test.");
     }
@@ -559,17 +573,37 @@ document.addEventListener("DOMContentLoaded", function() {
       <th>Cheating</th>
       <th>Delete</th>
     </tr>`;
+
     db.ref("studentResults").once("value", (snapshot) => {
       const results = snapshot.val() || {};
+      const now = new Date();
       Object.entries(results)
+        .filter(([_, r]) => r.rollNumber && r.rollNumber.trim() !== "") // Only show if rollNumber exists and not empty
         .sort((a, b) => a[1].rollNumber.localeCompare(b[1].rollNumber))
         .forEach(([key, r]) => {
           const row = document.createElement("tr");
+          let dateLabel = "-";
+          if (r.timestamp) {
+            const dateObj = new Date(r.timestamp);
+            const dateStr = dateObj.toLocaleDateString();
+            const todayStr = now.toLocaleDateString();
+            const yest = new Date(now);
+            yest.setDate(now.getDate() - 1);
+            const yestStr = yest.toLocaleDateString();
+            if (dateStr === todayStr) {
+              dateLabel = "Today";
+            } else if (dateStr === yestStr) {
+              dateLabel = "Yesterday";
+            } else {
+              dateLabel = dateStr;
+            }
+            dateLabel += " " + dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          }
           row.innerHTML = `
             <td>${r.rollNumber}</td>
             <td>${r.score}</td>
-            <td>${r.timestamp || "-"}</td>
-            <td style="text-align:center;">${r.cheating ? "✔" : ""}</td>
+            <td>${dateLabel}</td>
+            <td style="text-align:center;">${r.cheating ? "✔️" : ""}</td>
             <td>
               <button style="background:#ff4757;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;" onclick="deleteStudentResult('${key}')">Delete</button>
             </td>
@@ -588,14 +622,58 @@ document.addEventListener("DOMContentLoaded", function() {
       delAllBtn.onclick = deleteAllResults;
       table.parentNode.insertBefore(delAllBtn, table);
     }
+
+    // Add Download button if not already present
+    let downloadBtn = document.getElementById("downloadResultsBtn");
+    if (!downloadBtn) {
+      downloadBtn = document.createElement("button");
+      downloadBtn.id = "downloadResultsBtn";
+      downloadBtn.textContent = "Download Results";
+      downloadBtn.style = "background:#00e6d3;color:#232526;border:none;padding:8px 24px;border-radius:8px;cursor:pointer;margin-bottom:12px;margin-top:8px;font-weight:700;font-size:1.08rem;margin-left:12px;";
+      downloadBtn.onclick = downloadAllResults;
+      table.parentNode.insertBefore(downloadBtn, table);
+    }
   }
 
-  function deleteAllResults() {
-    if (confirm("Are you sure you want to delete ALL student results? This cannot be undone.")) {
-      db.ref("studentResults").remove().then(() => {
-        showAllResults();
+  function downloadAllResults() {
+    db.ref("studentResults").once("value", (snapshot) => {
+      const results = snapshot.val() || {};
+      const now = new Date();
+      let csv = "Roll Number,Score,Submitted At,Cheating\n";
+      Object.values(results).forEach(r => {
+        let dateLabel = "-";
+        if (r.timestamp) {
+          const dateObj = new Date(r.timestamp);
+          const dateStr = dateObj.toLocaleDateString();
+          const todayStr = now.toLocaleDateString();
+          const yest = new Date(now);
+          yest.setDate(now.getDate() - 1);
+          const yestStr = yest.toLocaleDateString();
+          if (dateStr === todayStr) {
+            dateLabel = "Today";
+          } else if (dateStr === yestStr) {
+            dateLabel = "Yesterday";
+          } else {
+            dateLabel = dateStr;
+          }
+          dateLabel += " " + dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        csv += `"${r.rollNumber}","${r.score}","${dateLabel}","${r.cheating ? "Yes" : ""}"\n`;
       });
-    }
+
+      // Download as CSV
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "student_results.csv";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 0);
+    });
   }
 
   // Add this function to handle deletion
@@ -607,9 +685,27 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
+  function deleteAllResults() {
+    if (confirm("Are you sure you want to delete ALL student results? This cannot be undone.")) {
+      db.ref("studentResults").remove().then(() => {
+        showAllResults();
+      });
+    }
+  }
+
   function adminLogout() {
     document.getElementById("adminPanel").classList.add("hidden");
     document.getElementById("welcomePage").classList.remove("hidden");
+  }
+
+  // Restrict student login roll number input to numbers only
+  const rollInput = document.getElementById("rollNumber");
+  if (rollInput) {
+    rollInput.setAttribute("inputmode", "numeric");
+    rollInput.setAttribute("pattern", "[0-9]*");
+    rollInput.addEventListener("input", function () {
+      this.value = this.value.replace(/[^0-9]/g, "");
+    });
   }
 
   // ✅ Expose functions globally
@@ -621,4 +717,5 @@ document.addEventListener("DOMContentLoaded", function() {
   window.adminLogout = adminLogout;
   window.deleteStudentResult = deleteStudentResult;
   window.deleteAllResults = deleteAllResults;
+  window.downloadAllResults = downloadAllResults;
 });
