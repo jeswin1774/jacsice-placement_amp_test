@@ -30,8 +30,9 @@
       <div class="welcome-divider"></div>
       <p class="welcome-title">Placement Aptitude Test Portal</p>
       <p class="tagline">Shaping Bright Futures Through Knowledge</p>
-      <button onclick="goToLogin()">Start Your Test</button>
-      <button style="margin-top:12px;background:#232526;color:#fff;border:1px solid #00e6d3;" onclick="showAdminLogin()">Admin Login</button>
+      <button onclick="goToLogin()" aria-label="Start Test">Start Your Test</button>
+      <button style="margin-top:12px;" onclick="showAdminLogin()" aria-label="Admin Login">Admin Login</button>
+      <button style="margin-top:8px;" onclick="showTrainerLogin()" aria-label="Trainer Login">Trainer Login</button>
     </div>
   </div>
 
@@ -53,11 +54,20 @@
     <p id="adminLoginError" class="error"></p>
   </div>
 
+  <!-- Trainer Login Page -->
+  <div id="trainerLoginPage" class="hidden login-container">
+    <h2>Trainer Login</h2>
+    <input type="text" id="trainerUser" placeholder="Trainer Username" />
+    <input type="password" id="trainerPass" placeholder="Trainer Password" />
+    <button onclick="trainerLogin()">Login</button>
+    <p id="trainerLoginError" class="error"></p>
+  </div>
+
   <!-- Quiz Page -->
   <div id="quizPage" class="hidden quiz-container">
     <div class="quiz-header">
       <h2 id="studentId"></h2>
-      <div id="timer">01:00</div>
+      <div id="timer">25:00</div>
     </div>
 
     <div id="questionBox"></div>
@@ -75,6 +85,43 @@
       <!-- Populated by JS -->
     </table>
     <button onclick="adminLogout()">Logout</button>
+  </div>
+
+  <!-- Trainer Panel -->
+  <div id="trainerPanel" class="hidden result-container">
+    <h2>📝 Trainer Question Management</h2>
+    
+    <div style="margin-bottom: 30px; padding: 20px; background: rgba(0,230,211,0.05); border-radius: 10px;">
+      <h3>➕ Add New Question</h3>
+      <textarea id="newQuestion" placeholder="Enter question text here..." 
+                style="width:100%; height:80px; padding:12px; margin:10px 0; border-radius:8px; 
+                       background: rgba(255,255,255,0.1); color: white; border: 1px solid #00e6d3;"></textarea>
+      
+      <div id="optionsContainer">
+        <input type="text" id="option1" placeholder="Option 1 *" 
+               style="width:100%; padding:10px; margin:5px 0; border-radius:6px; background: rgba(255,255,255,0.1); color: white; border: 1px solid #00e6d3;">
+        <input type="text" id="option2" placeholder="Option 2 *" 
+               style="width:100%; padding:10px; margin:5px 0; border-radius:6px; background: rgba(255,255,255,0.1); color: white; border: 1px solid #00e6d3;">
+        <input type="text" id="option3" placeholder="Option 3 *" 
+               style="width:100%; padding:10px; margin:5px 0; border-radius:6px; background: rgba(255,255,255,0.1); color: white; border: 1px solid #00e6d3;">
+        <input type="text" id="option4" placeholder="Option 4 *" 
+               style="width:100%; padding:10px; margin:5px 0; border-radius:6px; background: rgba(255,255,255,0.1); color: white; border: 1px solid #00e6d3;">
+        <input type="text" id="option5" placeholder="Option 5 (Optional)" 
+               style="width:100%; padding:10px; margin:5px 0; border-radius:6px; background: rgba(255,255,255,0.1); color: white; border: 1px solid #00e6d3;">
+      </div>
+      
+      <input type="text" id="correctAnswer" placeholder="Correct Answer (must match exactly one option) *" 
+             style="width:100%; padding:10px; margin:10px 0; border-radius:6px; background: rgba(255,255,255,0.1); color: white; border: 1px solid #00e6d3;">
+      
+      <button onclick="addQuestion()" style="background:linear-gradient(90deg, #00e6d3 0%, #0072ff 100%); color:#232526; padding:12px 30px; border-radius:8px; font-weight:bold;">Add Question</button>
+    </div>
+    
+    <div style="padding: 20px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+      <h3>📋 Existing Questions (Total: <span id="questionsCount">0</span>)</h3>
+      <div id="questionsList" style="text-align:left; max-height:400px; overflow-y:auto; margin-top:15px;"></div>
+    </div>
+    
+    <button onclick="trainerLogout()" style="margin-top:20px; background:#232526; color:#00e6d3; border:1px solid #00e6d3;">Logout</button>
   </div>
 
   <!-- Result Page -->

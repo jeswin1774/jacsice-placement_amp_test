@@ -18,288 +18,14 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   const db = firebase.database();
 
-  // ✅ Questions array
-  const allQuestions = [
-    {
-      q: "1. Arrange the given fractions in ascending order 9/17, 7/23, 11/21 and 13/19",
-      options: [
-        "13/19, 9/17, 7/23, 11/21",
-        "9/17, 11/21, 7/23, 13/19",
-        "7/23, 11/21, 9/17, 13/19",
-        "11/21, 9/17, 7/23, 13/19",
-        "None of these"
-      ],
-      answer: "7/23, 11/21, 9/17, 13/19"
-    },
-    {
-      q: "2.3^0.6×81×91.3×270.2=3?",
-      options: [
-        "7.8",
-        "3.9",
-        "4.5",
-        "5.4",
-        "None of these"
-      ],
-      answer: "3.9"
-    },
-    {
-      q: "3. The difference between two numbers is 3 and the difference between their squares is 63. What is the larger number?",
-      options: [
-        "12",
-        "9",
-        "15",
-        "Cannot be determined",
-        "None of these"
-      ],
-      answer: "12"
-    },
-    {
-      q: "4. What is the smallest digit which should replace * in the number 296*12 to make it divisible by 12?",
-      options: [
-        "1",
-        "2",
-        "3",
-        "4",
-        "None of these"
-      ],
-      answer: "2"
-    },
-    {
-      q: "5. A, B, C, D and E are five consecutive odd numbers. The sum of A and C is 146. What is the value of E?",
-      options: [
-        "75",
-        "81",
-        "71",
-        "79",
-        "None of these"
-      ],
-      answer: "79"
-    },
-    {
-      q: "6. What is the largest number that can exactly divide 52, 65 and 165?",
-      options: [
-        "11",
-        "13",
-        "14",
-        "12",
-        "none of these"
-      ],
-      answer: "13"
-    },
-    {
-      q: "7. If the HCF of two numbers is 11 and their LCM is 7700. If one of these numbers is 275, then what is the other number?",
-      options: [
-        "279",
-        "283",
-        "308",
-        "318",
-        "None of these"
-      ],
-      answer: "308"
-    },
-    {
-      q: "8. Find the smallest number which gives a remainder 5, when divided by any of the numbers 8, 12 and 15?",
-      options: [
-        "120",
-        "240",
-        "125",
-        "65",
-        "101"
-      ],
-      answer: "125"
-    },
-    {
-      q: "9. What will be the greatest number that divides 68, 59 and 43 leaving the remainder 8, 9 and 3 respectively?",
-      options: [
-        "8",
-        "10",
-        "24",
-        "35",
-        "None of these"
-      ],
-      answer: "10"
-    },
-    {
-      q: "10. Find the greatest number of 4 digits, which is exactly divisible by 8,12,18,15 and 20.",
-      options: [
-        "9840",
-        "9720",
-        "9280",
-        "9630",
-        "none of these"
-      ],
-      answer: "9720"
-    },
-    {
-      q: "11. The distance between two stations A and B is 778 km. A train covers the journey from A to B at 84 km per hour and returns back to A with a uniform speed of 56 km per hour. Find the average speed of train during the whole journey.",
-      options: [
-        "60.3 km/hr",
-        "35.0 km/hr",
-        "57.5 km/hr",
-        "57.5 km/hr"
-      ],
-      answer: "67.2 km/hr"
-    },
-    {
-      q: "12. The mean weight of a group of seven boys is 56 kg. The individual weights (in kg) of six of them are 52, 57, 55, 60, 59 and 55. Find the weight of the seventh boy.",
-      options: [
-        "64",
-        "54",
-        "88",
-        "28"
-      ],
-      answer: "64"
-    },
-    {
-      q: "13. The following observations are 8, 11, 12, x+6, 17, 18, 23. The median of the data is 15 find the value of x.",
-      options: [
-        "9",
-        "7",
-        "8",
-        "6"
-      ],
-      answer: "9"
-    },
-    {
-      q: "14. Class A has 15 students with mean marks of 60, and Class B has 12 students with mean marks of 48. Calculate the combined mean.",
-      options: [
-        "54.8",
-        "54",
-        "55.2",
-        "56"
-      ],
-      answer: "54.8"
-    },
-    {
-      q: "15. If the mean and mode of some data are 4 & 10 respectively its median will be",
-      options: [
-        "8",
-        "6",
-        "7",
-        "9"
-      ],
-      answer: "6"
-    },
-    {
-      q: "16. Sonali invests 15% of her monthly salary in insurance policies. She spends 55% of her monthly salary in shopping and on household expenses. She saves the remaining amount of ₹12750. What is Sonali’s monthly income?",
-      options: [
-        "42,500",
-        "38,800",
-        "40,000",
-        "35,500",
-        "None of these"
-      ],
-      answer: "42,500"
-    },
-    {
-      q: "17. The price of a car is ₹325000. It was insured to 85% of its price. The car was damaged completely in an accident and the insurance company paid 90% of the insurance. What was the difference between the price of the car and the amount received?",
-      options: [
-        "32,500",
-        "48,750",
-        "76,375",
-        "81,250",
-        "None of these"
-      ],
-      answer: "76,375"
-    },
-    {
-      q: "18. In a college election between two students, 10% of the votes cast are invalid. The winner gets 70% of the valid votes and defeats the loser by 1800 votes. How many votes were totally cast?",
-      options: [
-        "1800",
-        "7200",
-        "5000",
-        "3600",
-        "None of these"
-      ],
-      answer: "7200"
-    },
-    {
-      q: "19. The sale of Company N is 40% less than that of Company T. Then by what per cent is the sale of company T more than that of N?",
-      options: [
-        "66%",
-        "20%",
-        "40%",
-        "10%",
-        "None of these"
-      ],
-      answer: "66%"
-    },
-    {
-      q: "20. When the cost of petroleum increases by 40%, a man reduces his annual consumption by 20%. Find the percentage change in his annual expenditure on petroleum.",
-      options: [
-        "20%",
-        "16%",
-        "12%",
-        "40%",
-        "None of these"
-      ],
-      answer: "12%"
-    },
-    {
-      q: "21. A certain amount is to be distributed among Samiksha, Purva and Neha in the proportion of 5:3:4. If the difference between Purva's and Samiksha's share is 1200. How much did Neha get?",
-      options: [
-        "2400",
-        "1600",
-        "2200",
-        "Cannot be determined",
-        "None of these"
-      ],
-      answer: "1600"
-    },
-    {
-      q: "22. A sum of money is divided among A, B, C and D in the ratio 5:8:9:11. If the share of B is ₹2475 more than the share of A then what is the total amount of money of A & C together?",
-      options: [
-        "9900",
-        "11550",
-        "10725",
-        "9075",
-        "None of these"
-      ],
-      answer: "10725"
-    },
-    {
-      q: "23. A, B and C divide an amount of ₹4000 amongst themselves in the ratio of 2:5:1 respectively. If an amount of 800 is added to each of their shares, what will be the new ratio of their shares of the amount?",
-      options: [
-        "18:33:13",
-        "6:7:4",
-        "7:8:9",
-        "3:6:2",
-        "None of these"
-      ],
-      answer: "6:7:4"
-    },
-    {
-      q: "24. If 1/4th area of a rectangular plot is 2700 sq m and the width of that plot is 90 m, what is the ratio between the width and the length of the plot?",
-      options: [
-        "3:4",
-        "4:3",
-        "3:1",
-        "1:3",
-        "None of these"
-      ],
-      answer: "3:4"
-    },
-    {
-      q: "25. There are 2304 workers in company A and 2816 in company B. What is the ratio of workers in company A to that of B?",
-      options: [
-        "7:13",
-        "13:7",
-        "9:11",
-        "11:9",
-        "None of these"
-      ],
-      answer: "9:11"
-    }
-  ];
-
-
   // Global variables
   let currentQuestionIndex = 0;
   let score = 0;
-  let timeLeft = 25 * 60; // Changed from 30 * 60 to 25 * 60 (25 minutes)
+  let timeLeft = 25 * 60;
   let timer;
   let cheatingDetected = false;
   let testCompleted = false;
+  let allQuestions = []; // Will be loaded from Firebase
 
   // DOM elements
   const questionText = document.getElementById("questionBox");
@@ -309,20 +35,41 @@ document.addEventListener("DOMContentLoaded", function() {
   const nextBtn = document.getElementById("nextBtn");
   const studentIdText = document.getElementById("studentId");
 
-  /// <reference path="https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js" />
-  /// <reference path="https://www.gstatic.com/firebasejs/9.1.2/firebase-database.js" />
-
-
-  // Navigation functions
+  // ==================== NAVIGATION FUNCTIONS ====================
   function goToLogin() {
     document.getElementById("welcomePage").classList.add("hidden");
     document.getElementById("loginPage").classList.remove("hidden");
     document.getElementById("adminLoginPage").classList.add("hidden");
+    document.getElementById("trainerLoginPage").classList.add("hidden");
     document.getElementById("quizPage").classList.add("hidden");
     document.getElementById("resultPage").classList.add("hidden");
     document.getElementById("adminPanel").classList.add("hidden");
+    document.getElementById("trainerPanel").classList.add("hidden");
   }
 
+  function showAdminLogin() {
+    document.getElementById("welcomePage").classList.add("hidden");
+    document.getElementById("loginPage").classList.add("hidden");
+    document.getElementById("adminLoginPage").classList.remove("hidden");
+    document.getElementById("trainerLoginPage").classList.add("hidden");
+    document.getElementById("quizPage").classList.add("hidden");
+    document.getElementById("resultPage").classList.add("hidden");
+    document.getElementById("adminPanel").classList.add("hidden");
+    document.getElementById("trainerPanel").classList.add("hidden");
+  }
+
+  function showTrainerLogin() {
+    document.getElementById("welcomePage").classList.add("hidden");
+    document.getElementById("loginPage").classList.add("hidden");
+    document.getElementById("adminLoginPage").classList.add("hidden");
+    document.getElementById("trainerLoginPage").classList.remove("hidden");
+    document.getElementById("quizPage").classList.add("hidden");
+    document.getElementById("resultPage").classList.add("hidden");
+    document.getElementById("adminPanel").classList.add("hidden");
+    document.getElementById("trainerPanel").classList.add("hidden");
+  }
+
+  // ==================== STUDENT LOGIN & QUIZ FUNCTIONS ====================
   function login() {
     const rollNumber = document.getElementById("rollNumber").value.trim();
     const password = document.getElementById("password").value.trim();
@@ -333,7 +80,6 @@ document.addEventListener("DOMContentLoaded", function() {
       return;
     }
 
-    // Password must be last 3 digits of roll number
     if (rollNumber.length < 3 || password !== rollNumber.slice(-3)) {
       loginError.textContent = "Password must be the last 3 digits of your Roll Number.";
       return;
@@ -350,29 +96,51 @@ document.addEventListener("DOMContentLoaded", function() {
         } else {
           loginError.textContent = "";
 
-          document.getElementById("loginPage").classList.add("hidden");
-          document.getElementById("quizPage").classList.remove("hidden");
+          // Load questions from Firebase
+          loadQuizQuestions((questions) => {
+            allQuestions = questions;
+            
+            if (allQuestions.length === 0) {
+              loginError.textContent = "No questions available. Please contact administrator.";
+              return;
+            }
 
-          // ✅ Fixed
-          studentIdText.textContent = `Roll Number: ${rollNumber}`;
+            document.getElementById("loginPage").classList.add("hidden");
+            document.getElementById("quizPage").classList.remove("hidden");
 
-          currentQuestionIndex = 0;
-          score = 0;
-          timeLeft = 25 * 60;
-          testCompleted = false;
-          cheatingDetected = false;
-          nextBtn.style.display = "none";
-          timerText.style.display = "block";
+            studentIdText.textContent = `Roll Number: ${rollNumber}`;
 
-          showQuestion();
-          startTimer();
+            currentQuestionIndex = 0;
+            score = 0;
+            timeLeft = 25 * 60;
+            testCompleted = false;
+            cheatingDetected = false;
+            nextBtn.style.display = "none";
+            timerText.style.display = "block";
 
-          document.documentElement.requestFullscreen().catch(() => {});
+            showQuestion();
+            startTimer();
+
+            document.documentElement.requestFullscreen().catch(() => {});
+          });
         }
       });
   }
 
+  function loadQuizQuestions(callback) {
+    db.ref("questions").once("value", (snapshot) => {
+      const questions = snapshot.val() || {};
+      const questionsArray = Object.values(questions);
+      callback(questionsArray);
+    });
+  }
+
   function showQuestion() {
+    if (currentQuestionIndex >= allQuestions.length) {
+      endTest();
+      return;
+    }
+
     const currentQuestion = allQuestions[currentQuestionIndex];
     questionText.textContent = currentQuestion.q;
     optionsContainer.innerHTML = "";
@@ -385,7 +153,6 @@ document.addEventListener("DOMContentLoaded", function() {
       optionsContainer.appendChild(optionElem);
     });
 
-    // Remove selection and enable all options for new question
     nextBtn.style.display = "none";
   }
 
@@ -394,35 +161,31 @@ document.addEventListener("DOMContentLoaded", function() {
   function selectOption(optionElem, selectedOption) {
     if (testCompleted) return;
 
-    // Remove previous selection
     const allOptionElems = optionsContainer.querySelectorAll(".option");
     allOptionElems.forEach((elem) => {
       elem.classList.remove("selected");
     });
 
-    // Mark current as selected
     optionElem.classList.add("selected");
     selectedOptionValue = selectedOption;
     nextBtn.style.display = "inline-block";
   }
 
   function nextQuestion() {
-    // Score only if selectedOptionValue is correct
     const currentQuestion = allQuestions[currentQuestionIndex];
     if (selectedOptionValue === currentQuestion.answer) {
       score++;
     }
 
-    // Disable further selection for this question
     const allOptionElems = optionsContainer.querySelectorAll(".option");
     allOptionElems.forEach((elem) => {
       elem.onclick = null;
       elem.style.pointerEvents = "none";
     });
 
-    // Prepare for next question
     currentQuestionIndex++;
     selectedOptionValue = null;
+    
     if (currentQuestionIndex >= allQuestions.length) {
       endTest();
     } else {
@@ -431,7 +194,6 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   function startTimer() {
-    // ✅ Fixed
     timerText.textContent = `Time Left: ${formatTime(timeLeft)}`;
     timer = setInterval(() => {
       timeLeft--;
@@ -446,11 +208,10 @@ document.addEventListener("DOMContentLoaded", function() {
   function formatTime(seconds) {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
-    // ✅ Fixed
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   }
 
-  // Cheating detection - Only for test (quizPage visible)
+  // Cheating detection
   document.addEventListener("visibilitychange", () => {
     if (
       document.hidden &&
@@ -501,13 +262,13 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  // ✅ Store student result in Firebase
   function storeStudentResult(rollNumber, score, cheating) {
     const resultRef = db.ref("studentResults").push();
     resultRef.set({
       rollNumber: rollNumber,
       score: score,
-      cheating: !!cheating, // Ensure boolean
+      totalQuestions: allQuestions.length,
+      cheating: !!cheating,
       timestamp: new Date().toISOString()
     });
   }
@@ -520,35 +281,24 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("resultPage").classList.remove("hidden");
 
     const rollNumber = studentIdText.textContent.replace("Roll Number: ", "").trim();
-    // Store cheatingDetected flag in Firebase
     storeStudentResult(rollNumber, score, cheatingDetected);
 
-    // ✅ Fixed
     scoreBox.innerHTML =
       `<div style="font-weight:bold;margin-bottom:8px;">Roll Number: ${rollNumber}</div>` +
+      `<div style="font-size:1.3em;margin:10px 0;">Score: ${score} out of ${allQuestions.length}</div>` +
       (cheatingDetected
-        ? `Test ended due to cheating or switching apps. Your score is ${score} out of ${allQuestions.length}.`
-        : `Your score is ${score} out of ${allQuestions.length}.`);
+        ? `<div style="color:#ff6b81;font-weight:bold;">⚠️ Test terminated due to policy violation</div>`
+        : `<div style="color:#50fa7b;font-weight:bold;">✅ Test completed successfully</div>`);
 
     timerText.style.display = "none";
     nextBtn.style.display = "none";
 
     if (document.fullscreenElement) {
-      document.getElementById("resultPage").requestFullscreen().catch(() => {});
+      document.exitFullscreen().catch(() => {});
     }
   }
 
-  // Admin login and result view
-  function showAdminLogin() {
-    // Show the admin login page styled like student login
-    document.getElementById("welcomePage").classList.add("hidden");
-    document.getElementById("loginPage").classList.add("hidden");
-    document.getElementById("adminLoginPage").classList.remove("hidden");
-    document.getElementById("quizPage").classList.add("hidden");
-    document.getElementById("resultPage").classList.add("hidden");
-    document.getElementById("adminPanel").classList.add("hidden");
-  }
-
+  // ==================== ADMIN FUNCTIONS ====================
   function adminLogin() {
     const user = document.getElementById("adminUser").value.trim();
     const pass = document.getElementById("adminPass").value.trim();
@@ -569,6 +319,7 @@ document.addEventListener("DOMContentLoaded", function() {
     table.innerHTML = `<tr>
       <th>Roll Number</th>
       <th>Score</th>
+      <th>Total Questions</th>
       <th>Submitted At</th>
       <th>Cheating</th>
       <th>Delete</th>
@@ -578,7 +329,7 @@ document.addEventListener("DOMContentLoaded", function() {
       const results = snapshot.val() || {};
       const now = new Date();
       Object.entries(results)
-        .filter(([_, r]) => r.rollNumber && r.rollNumber.trim() !== "") // Only show if rollNumber exists and not empty
+        .filter(([_, r]) => r.rollNumber && r.rollNumber.trim() !== "")
         .sort((a, b) => a[1].rollNumber.localeCompare(b[1].rollNumber))
         .forEach(([key, r]) => {
           const row = document.createElement("tr");
@@ -602,6 +353,7 @@ document.addEventListener("DOMContentLoaded", function() {
           row.innerHTML = `
             <td>${r.rollNumber}</td>
             <td>${r.score}</td>
+            <td>${r.totalQuestions || 'N/A'}</td>
             <td>${dateLabel}</td>
             <td style="text-align:center;">${r.cheating ? "✔️" : ""}</td>
             <td>
@@ -612,23 +364,21 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // Add Delete All button if not already present
     let delAllBtn = document.getElementById("deleteAllBtn");
     if (!delAllBtn) {
       delAllBtn = document.createElement("button");
       delAllBtn.id = "deleteAllBtn";
-      delAllBtn.textContent = "Delete All";
+      delAllBtn.textContent = "Delete All Results";
       delAllBtn.style = "background:#ff4757;color:#fff;border:none;padding:8px 24px;border-radius:8px;cursor:pointer;margin-bottom:12px;margin-top:8px;font-weight:700;font-size:1.08rem;";
       delAllBtn.onclick = deleteAllResults;
       table.parentNode.insertBefore(delAllBtn, table);
     }
 
-    // Add Download button if not already present
     let downloadBtn = document.getElementById("downloadResultsBtn");
     if (!downloadBtn) {
       downloadBtn = document.createElement("button");
       downloadBtn.id = "downloadResultsBtn";
-      downloadBtn.textContent = "Download Results";
+      downloadBtn.textContent = "Download Results CSV";
       downloadBtn.style = "background:#00e6d3;color:#232526;border:none;padding:8px 24px;border-radius:8px;cursor:pointer;margin-bottom:12px;margin-top:8px;font-weight:700;font-size:1.08rem;margin-left:12px;";
       downloadBtn.onclick = downloadAllResults;
       table.parentNode.insertBefore(downloadBtn, table);
@@ -639,29 +389,16 @@ document.addEventListener("DOMContentLoaded", function() {
     db.ref("studentResults").once("value", (snapshot) => {
       const results = snapshot.val() || {};
       const now = new Date();
-      let csv = "Roll Number,Score,Submitted At,Cheating\n";
+      let csv = "Roll Number,Score,Total Questions,Submitted At,Cheating\n";
       Object.values(results).forEach(r => {
         let dateLabel = "-";
         if (r.timestamp) {
           const dateObj = new Date(r.timestamp);
-          const dateStr = dateObj.toLocaleDateString();
-          const todayStr = now.toLocaleDateString();
-          const yest = new Date(now);
-          yest.setDate(now.getDate() - 1);
-          const yestStr = yest.toLocaleDateString();
-          if (dateStr === todayStr) {
-            dateLabel = "Today";
-          } else if (dateStr === yestStr) {
-            dateLabel = "Yesterday";
-          } else {
-            dateLabel = dateStr;
-          }
-          dateLabel += " " + dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          dateLabel = dateObj.toLocaleString();
         }
-        csv += `"${r.rollNumber}","${r.score}","${dateLabel}","${r.cheating ? "Yes" : ""}"\n`;
+        csv += `"${r.rollNumber}","${r.score}","${r.totalQuestions || 'N/A'}","${dateLabel}","${r.cheating ? "Yes" : "No"}"\n`;
       });
 
-      // Download as CSV
       const blob = new Blob([csv], { type: "text/csv" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -676,7 +413,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // Add this function to handle deletion
   function deleteStudentResult(key) {
     if (confirm("Are you sure you want to delete this student's result?")) {
       db.ref("studentResults/" + key).remove().then(() => {
@@ -698,7 +434,166 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("welcomePage").classList.remove("hidden");
   }
 
-  // Restrict student login roll number input to numbers only
+  // ==================== TRAINER FUNCTIONS ====================
+  function trainerLogin() {
+    const user = document.getElementById("trainerUser").value.trim();
+    const pass = document.getElementById("trainerPass").value.trim();
+    const err = document.getElementById("trainerLoginError");
+
+    if (user === "trainer" && pass === "trainer123") {
+      document.getElementById("trainerLoginPage").classList.add("hidden");
+      document.getElementById("trainerPanel").classList.remove("hidden");
+      loadQuestions();
+      err.textContent = "";
+    } else {
+      err.textContent = "Invalid trainer credentials (use: trainer/trainer123)";
+    }
+  }
+
+  function loadQuestions() {
+    const questionsList = document.getElementById("questionsList");
+    questionsList.innerHTML = "<p style='text-align:center; color:#00e6d3;'>Loading questions...</p>";
+    
+    db.ref("questions").once("value", (snapshot) => {
+      const questions = snapshot.val() || {};
+      questionsList.innerHTML = "";
+      
+      document.getElementById("questionsCount").textContent = Object.keys(questions).length;
+      
+      if (Object.keys(questions).length === 0) {
+        questionsList.innerHTML = "<p style='text-align:center; color:#ff6b81;'>No questions found. Add some questions to get started!</p>";
+        return;
+      }
+      
+      Object.entries(questions).forEach(([key, q], index) => {
+        const questionDiv = document.createElement("div");
+        questionDiv.style.border = "1px solid #00e6d3";
+        questionDiv.style.padding = "15px";
+        questionDiv.style.margin = "10px 0";
+        questionDiv.style.borderRadius = "8px";
+        questionDiv.style.background = "rgba(0,230,211,0.05)";
+        questionDiv.style.transition = "all 0.3s ease";
+        
+        questionDiv.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="flex: 1;">
+              <strong style="color:#00e6d3;">Q${index + 1}:</strong> ${q.q}<br>
+              <div style="margin: 8px 0; font-size: 0.9em;">
+                <strong>Options:</strong> ${q.options.map(opt => `<span style="color:#8be9fd;">"${opt}"</span>`).join(", ")}<br>
+                <strong style="color:#50fa7b;">Answer:</strong> <span style="color:#50fa7b;">${q.answer}</span>
+              </div>
+            </div>
+            <div style="margin-left: 15px;">
+              <button onclick="editQuestion('${key}')" 
+                      style="background:#0072ff; color:white; padding:6px 12px; margin:2px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
+                Edit
+              </button>
+              <button onclick="deleteQuestion('${key}')" 
+                      style="background:#ff4757; color:white; padding:6px 12px; margin:2px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em;">
+                Delete
+              </button>
+            </div>
+          </div>
+        `;
+        
+        questionDiv.onmouseenter = () => {
+          questionDiv.style.transform = "translateX(5px)";
+          questionDiv.style.boxShadow = "0 4px 12px rgba(0,230,211,0.2)";
+        };
+        questionDiv.onmouseleave = () => {
+          questionDiv.style.transform = "translateX(0)";
+          questionDiv.style.boxShadow = "none";
+        };
+        
+        questionsList.appendChild(questionDiv);
+      });
+    });
+  }
+
+  function addQuestion() {
+    const question = document.getElementById("newQuestion").value.trim();
+    const option1 = document.getElementById("option1").value.trim();
+    const option2 = document.getElementById("option2").value.trim();
+    const option3 = document.getElementById("option3").value.trim();
+    const option4 = document.getElementById("option4").value.trim();
+    const option5 = document.getElementById("option5").value.trim();
+    const answer = document.getElementById("correctAnswer").value.trim();
+    
+    if (!question || !option1 || !option2 || !option3 || !option4 || !answer) {
+      alert("❌ Please fill all required fields (marked with *)");
+      return;
+    }
+    
+    const options = [option1, option2, option3, option4];
+    if (option5) options.push(option5);
+    
+    if (!options.includes(answer)) {
+      alert("❌ Correct answer must match exactly one of the options!");
+      return;
+    }
+    
+    const newQuestion = {
+      q: question,
+      options: options,
+      answer: answer,
+      timestamp: new Date().toISOString()
+    };
+    
+    db.ref("questions").push(newQuestion)
+      .then(() => {
+        alert("✅ Question added successfully!");
+        
+        document.getElementById("newQuestion").value = "";
+        document.getElementById("option1").value = "";
+        document.getElementById("option2").value = "";
+        document.getElementById("option3").value = "";
+        document.getElementById("option4").value = "";
+        document.getElementById("option5").value = "";
+        document.getElementById("correctAnswer").value = "";
+        
+        loadQuestions();
+      })
+      .catch((error) => {
+        alert("❌ Error adding question: " + error.message);
+      });
+  }
+
+  function deleteQuestion(key) {
+    if (confirm("🗑️ Are you sure you want to delete this question?")) {
+      db.ref("questions/" + key).remove()
+        .then(() => {
+          loadQuestions();
+        })
+        .catch((error) => {
+          alert("❌ Error deleting question: " + error.message);
+        });
+    }
+  }
+
+  function editQuestion(key) {
+    db.ref("questions/" + key).once("value", (snapshot) => {
+      const question = snapshot.val();
+      
+      document.getElementById("newQuestion").value = question.q;
+      document.getElementById("option1").value = question.options[0] || "";
+      document.getElementById("option2").value = question.options[1] || "";
+      document.getElementById("option3").value = question.options[2] || "";
+      document.getElementById("option4").value = question.options[3] || "";
+      document.getElementById("option5").value = question.options[4] || "";
+      document.getElementById("correctAnswer").value = question.answer;
+      
+      deleteQuestion(key);
+      
+      window.scrollTo(0, 0);
+    });
+  }
+
+  function trainerLogout() {
+    document.getElementById("trainerPanel").classList.add("hidden");
+    document.getElementById("welcomePage").classList.remove("hidden");
+  }
+
+  // ==================== UTILITY FUNCTIONS ====================
   const rollInput = document.getElementById("rollNumber");
   if (rollInput) {
     rollInput.setAttribute("inputmode", "numeric");
@@ -718,4 +613,10 @@ document.addEventListener("DOMContentLoaded", function() {
   window.deleteStudentResult = deleteStudentResult;
   window.deleteAllResults = deleteAllResults;
   window.downloadAllResults = downloadAllResults;
+  window.showTrainerLogin = showTrainerLogin;
+  window.trainerLogin = trainerLogin;
+  window.trainerLogout = trainerLogout;
+  window.addQuestion = addQuestion;
+  window.editQuestion = editQuestion;
+  window.deleteQuestion = deleteQuestion;
 });
