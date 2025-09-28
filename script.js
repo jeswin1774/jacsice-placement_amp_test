@@ -446,7 +446,7 @@ document.addEventListener("DOMContentLoaded", function() {
       loadQuestions();
       err.textContent = "";
     } else {
-      err.textContent = "Invalid trainer credentials (use: trainer/trainer123)";
+      err.textContent = "Invalid trainer credentials.";
     }
   }
 
