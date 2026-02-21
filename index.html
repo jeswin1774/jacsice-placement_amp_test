@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JACSICE — Placement Aptitude Test</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+
+  <!-- ══════════════════ WELCOME PAGE ══════════════════ -->
+  <div id="welcomePage" class="welcome-container">
+    <div class="welcome-icon">
+      <svg width="64" height="64" fill="none" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="32" fill="url(#iconGrad)"/>
+        <path d="M32 16L52 26V38L32 48L12 38V26L32 16Z" fill="#fff" fill-opacity="0.92"/>
+        <path d="M32 16V48" stroke="#00e6d3" stroke-width="2.5" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="iconGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00e6d3"/>
+            <stop offset="1" stop-color="#0072ff"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <h1 class="college-name">Jayaraj Annapackiam CSI College of Engineering</h1>
+    <div class="welcome-divider"></div>
+    <p class="welcome-title">Placement Aptitude Test Portal</p>
+    <p class="tagline">Shaping Bright Futures Through Knowledge</p>
+
+    <div class="btn-group">
+      <button class="btn-primary" onclick="goToLogin()" style="width:260px;">
+        Start Your Test
+      </button>
+      <button class="btn-secondary" onclick="showAdminLogin()" style="width:260px;">
+        Admin Login
+      </button>
+      <button class="btn-secondary" onclick="showTrainerLogin()" style="width:260px;">
+        Trainer Login
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════ STUDENT LOGIN ══════════════════ -->
+  <div id="loginPage" class="hidden login-container">
+    <h2>Student Login</h2>
+    <input type="text" id="rollNumber" placeholder="Roll Number" autocomplete="off" inputmode="numeric" />
+    <input type="password" id="password" placeholder="Password (last 3 digits of roll no.)" />
+    <button onclick="login()">Login &rarr;</button>
+    <p id="loginError" class="error" role="alert"></p>
+  </div>
+
+  <!-- ══════════════════ ADMIN LOGIN ══════════════════ -->
+  <div id="adminLoginPage" class="hidden login-container">
+    <h2>Admin Login</h2>
+    <input type="text" id="adminUser" placeholder="Username" autocomplete="off" />
+    <input type="password" id="adminPass" placeholder="Password" />
+    <button onclick="adminLogin()">Login &rarr;</button>
+    <p id="adminLoginError" class="error" role="alert"></p>
+  </div>
+
+  <!-- ══════════════════ TRAINER LOGIN ══════════════════ -->
+  <div id="trainerLoginPage" class="hidden login-container">
+    <h2>Trainer Login</h2>
+    <input type="text" id="trainerUser" placeholder="Username" autocomplete="off" />
+    <input type="password" id="trainerPass" placeholder="Password" />
+    <button onclick="trainerLogin()">Login &rarr;</button>
+    <p id="trainerLoginError" class="error" role="alert"></p>
+  </div>
+
+  <!-- ══════════════════ QUIZ PAGE ══════════════════ -->
+  <div id="quizPage" class="hidden quiz-container">
+    <div class="quiz-header">
+      <h2 id="studentId"></h2>
+      <div id="timer" aria-live="polite" aria-label="Time remaining">25:00</div>
+    </div>
+
+    <div class="quiz-progress" role="progressbar" aria-label="Quiz progress">
+      <div class="quiz-progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+
+    <div id="questionBox" aria-live="polite"></div>
+    <div id="optionsBox" role="group" aria-label="Answer options"></div>
+
+    <div>
+      <button id="nextBtn" class="btn-teal" onclick="nextQuestion()" style="display:none;">
+        Next Question &rarr;
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════ ADMIN PANEL ══════════════════ -->
+  <div id="adminPanel" class="hidden result-container" style="max-width:900px;width:95vw;">
+    <h2>Student Results</h2>
+    <div class="admin-actions" id="adminActions">
+      <!-- Buttons injected by JS -->
+    </div>
+    <table id="adminResultsTable">
+      <!-- Populated by JS -->
+    </table>
+    <div style="margin-top:20px;">
+      <button class="btn-secondary" onclick="adminLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════ TRAINER PANEL ══════════════════ -->
+  <div id="trainerPanel" class="hidden result-container" style="max-width:800px;width:95vw;">
+    <h2>Question Management</h2>
+
+    <!-- Word File Import Section -->
+    <div class="trainer-add-section" style="border-color:rgba(212,175,55,0.25);background:rgba(212,175,55,0.04);">
+      <h3 style="color:var(--brand-gold);">📄 Import from Word File (.docx)</h3>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:14px;line-height:1.7;">
+        Upload a <strong style="color:var(--text-secondary);">.docx</strong> file — questions will be parsed and saved for students automatically. Each question must follow this format:
+      </p>
+      <code style="display:block;background:var(--bg-overlay);padding:12px 16px;border-radius:var(--r-md);
+                   font-size:0.8rem;line-height:2;color:var(--brand-teal);margin-bottom:16px;
+                   border-left:3px solid var(--brand-gold);">
+        Q1. What is the capital of India?<br>
+        A. Mumbai<br>
+        B. New Delhi<br>
+        C. Chennai<br>
+        D. Kolkata<br>
+        Answer: B
+      </code>
+
+      <label id="uploadLabel" style="display:flex;align-items:center;justify-content:center;gap:14px;
+             padding:26px;border:2px dashed rgba(212,175,55,0.30);border-radius:var(--r-md);
+             cursor:pointer;transition:all var(--t-fast);background:var(--bg-overlay);
+             color:var(--text-secondary);font-size:0.9rem;">
+        <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+             style="color:var(--brand-gold);flex-shrink:0;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+        </svg>
+        <span id="uploadLabelText">Click to choose a .docx file</span>
+        <input type="file" id="wordFileInput" accept=".docx" style="display:none;"
+               onchange="handleWordUpload(event)" />
+      </label>
+
+      <div id="uploadPreview" style="display:none;margin-top:16px;">
+        <div id="uploadStatus" style="padding:12px 16px;border-radius:var(--r-md);
+             margin-bottom:14px;font-size:0.88rem;font-weight:600;"></div>
+        <div id="parsedPreviewList" style="max-height:260px;overflow-y:auto;
+             display:flex;flex-direction:column;gap:8px;"></div>
+        <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;">
+          <button class="btn-primary" id="confirmImportBtn" onclick="confirmImport()" style="display:none;">
+            ✅ Import All Questions
+          </button>
+          <button class="btn-secondary" onclick="resetUpload()">✕ Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="trainer-add-section">
+      <h3>Add / Edit Question Manually</h3>
+      <textarea id="newQuestion" placeholder="Enter question text…"></textarea>
+
+      <div class="options-grid">
+        <input type="text" id="option1" placeholder="Option 1 *" />
+        <input type="text" id="option2" placeholder="Option 2 *" />
+        <input type="text" id="option3" placeholder="Option 3 *" />
+        <input type="text" id="option4" placeholder="Option 4 *" />
+        <input type="text" id="option5" placeholder="Option 5 (optional)" style="grid-column:1/-1;" />
+      </div>
+
+      <input type="text" id="correctAnswer" placeholder="Correct Answer — must match one option exactly *" />
+      <input type="hidden" id="editingKey" value="" />
+
+      <div style="display:flex;gap:12px;margin-top:8px;">
+        <button class="btn-teal" onclick="addQuestion()">Save Question</button>
+        <button class="btn-secondary" id="cancelEditBtn" onclick="cancelEdit()" style="display:none;">
+          Cancel Edit
+        </button>
+      </div>
+    </div>
+
+    <div class="trainer-list-section">
+      <h3>Questions &mdash; Total: <span id="questionsCount">0</span></h3>
+      <div id="questionsList"></div>
+    </div>
+
+    <button class="btn-secondary" onclick="trainerLogout()">Logout</button>
+  </div>
+
+  <!-- ══════════════════ RESULT PAGE ══════════════════ -->
+  <div id="resultPage" class="hidden result-container">
+    <h2>Test Completed</h2>
+    <p class="result-sub">Thank you for completing the aptitude test.</p>
+    <div id="scoreBox"></div>
+    <p class="credits">Powered by JACSICE Placement Cell</p>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
